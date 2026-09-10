@@ -1,0 +1,18 @@
+﻿estacao,municipio,pm25_medio,pm25_satelite_estimado,erro_residual
+Pinheiros,São Paulo,18.4,19.45,1.05
+Cerqueira César,São Paulo,20.1,22.2,2.1
+Congonhas,São Paulo,22.8,20.48,-2.32
+Parque D. Pedro II,São Paulo,21.5,25.68,4.18
+Santana,São Paulo,17.6,23.14,5.54
+Mooca,São Paulo,19.3,23.74,4.44
+Grajaú - Parelheiros,São Paulo,12.3,15.55,3.25
+Interlagos,São Paulo,15.8,17.29,1.49
+Santo Amaro,São Paulo,18.0,17.88,-0.12
+Itaquera,São Paulo,16.9,16.49,-0.41
+Mauá,Mauá,20.7,17.14,-3.56
+Santo André - Capuava,Santo André,21.2,17.28,-3.92
+São Caetano do Sul,São Caetano do Sul,19.5,19.12,-0.38
+Diadema,Diadema,18.9,16.55,-2.35
+Osasco,Osasco,20.4,16.34,-4.06
+Guarulhos - Paço Municipal,Guarulhos,19.8,16.62,-3.18
+Taboão da Serra,Taboão da Serra,17.9,17.03,-0.87

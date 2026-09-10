@@ -1,0 +1,369 @@
+{
+  "type": "FeatureCollection",
+  "name": "cetesb_qualidade_ar_rmspo",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.702,
+          -23.5614
+        ]
+      },
+      "properties": {
+        "estacao": "Pinheiros",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 18.4,
+        "pm10_medio_ug_m3": 33.2,
+        "no2_medio_ug_m3": 38.5,
+        "dias_ultrapassagem_oms": 58,
+        "altitude_m": 725,
+        "perfil": "Urbano / Tráfego Intenso",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.6727,
+          -23.5535
+        ]
+      },
+      "properties": {
+        "estacao": "Cerqueira César",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 20.1,
+        "pm10_medio_ug_m3": 36.8,
+        "no2_medio_ug_m3": 44.2,
+        "dias_ultrapassagem_oms": 67,
+        "altitude_m": 792,
+        "perfil": "Urbano / Tráfego Intenso",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.6635,
+          -23.6163
+        ]
+      },
+      "properties": {
+        "estacao": "Congonhas",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 22.8,
+        "pm10_medio_ug_m3": 41.5,
+        "no2_medio_ug_m3": 49.0,
+        "dias_ultrapassagem_oms": 76,
+        "altitude_m": 780,
+        "perfil": "Urbano / Aeroportuário",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.6277,
+          -23.5448
+        ]
+      },
+      "properties": {
+        "estacao": "Parque D. Pedro II",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 21.5,
+        "pm10_medio_ug_m3": 39.4,
+        "no2_medio_ug_m3": 46.8,
+        "dias_ultrapassagem_oms": 71,
+        "altitude_m": 725,
+        "perfil": "Centro Urbano / Comercial",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.6288,
+          -23.505
+        ]
+      },
+      "properties": {
+        "estacao": "Santana",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 17.6,
+        "pm10_medio_ug_m3": 32.0,
+        "no2_medio_ug_m3": 36.4,
+        "dias_ultrapassagem_oms": 52,
+        "altitude_m": 735,
+        "perfil": "Residencial / Comercial",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.5986,
+          -23.55
+        ]
+      },
+      "properties": {
+        "estacao": "Mooca",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 19.3,
+        "pm10_medio_ug_m3": 35.7,
+        "no2_medio_ug_m3": 41.0,
+        "dias_ultrapassagem_oms": 63,
+        "altitude_m": 730,
+        "perfil": "Misto / Industrial Histórico",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.6953,
+          -23.7767
+        ]
+      },
+      "properties": {
+        "estacao": "Grajaú - Parelheiros",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 12.3,
+        "pm10_medio_ug_m3": 24.1,
+        "no2_medio_ug_m3": 21.5,
+        "dias_ultrapassagem_oms": 31,
+        "altitude_m": 790,
+        "perfil": "Periférico / Mananciais",
+        "qualidade_ar": "Boa (Dentro da meta OMS 24h)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.6753,
+          -23.6806
+        ]
+      },
+      "properties": {
+        "estacao": "Interlagos",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 15.8,
+        "pm10_medio_ug_m3": 29.6,
+        "no2_medio_ug_m3": 30.2,
+        "dias_ultrapassagem_oms": 44,
+        "altitude_m": 745,
+        "perfil": "Urbano / Represa",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.7094,
+          -23.6525
+        ]
+      },
+      "properties": {
+        "estacao": "Santo Amaro",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 18.0,
+        "pm10_medio_ug_m3": 34.0,
+        "no2_medio_ug_m3": 39.5,
+        "dias_ultrapassagem_oms": 56,
+        "altitude_m": 730,
+        "perfil": "Comercial / Eixo Viário",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.458,
+          -23.58
+        ]
+      },
+      "properties": {
+        "estacao": "Itaquera",
+        "municipio": "São Paulo",
+        "pm25_medio_ug_m3": 16.9,
+        "pm10_medio_ug_m3": 31.8,
+        "no2_medio_ug_m3": 33.1,
+        "dias_ultrapassagem_oms": 49,
+        "altitude_m": 745,
+        "perfil": "Residencial Periférico",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.4614,
+          -23.6683
+        ]
+      },
+      "properties": {
+        "estacao": "Mauá",
+        "municipio": "Mauá",
+        "pm25_medio_ug_m3": 20.7,
+        "pm10_medio_ug_m3": 38.5,
+        "no2_medio_ug_m3": 43.0,
+        "dias_ultrapassagem_oms": 69,
+        "altitude_m": 770,
+        "perfil": "Industrial / Polo Petroquímico",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.495,
+          -23.645
+        ]
+      },
+      "properties": {
+        "estacao": "Santo André - Capuava",
+        "municipio": "Santo André",
+        "pm25_medio_ug_m3": 21.2,
+        "pm10_medio_ug_m3": 39.1,
+        "no2_medio_ug_m3": 45.2,
+        "dias_ultrapassagem_oms": 73,
+        "altitude_m": 760,
+        "perfil": "Industrial / Polo Petroquímico",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.5575,
+          -23.6181
+        ]
+      },
+      "properties": {
+        "estacao": "São Caetano do Sul",
+        "municipio": "São Caetano do Sul",
+        "pm25_medio_ug_m3": 19.5,
+        "pm10_medio_ug_m3": 36.2,
+        "no2_medio_ug_m3": 42.1,
+        "dias_ultrapassagem_oms": 64,
+        "altitude_m": 744,
+        "perfil": "Urbano Denso / Eixo Mauá",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.6125,
+          -23.6872
+        ]
+      },
+      "properties": {
+        "estacao": "Diadema",
+        "municipio": "Diadema",
+        "pm25_medio_ug_m3": 18.9,
+        "pm10_medio_ug_m3": 35.1,
+        "no2_medio_ug_m3": 37.8,
+        "dias_ultrapassagem_oms": 61,
+        "altitude_m": 765,
+        "perfil": "Industrial / Automotivo",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.7919,
+          -23.5267
+        ]
+      },
+      "properties": {
+        "estacao": "Osasco",
+        "municipio": "Osasco",
+        "pm25_medio_ug_m3": 20.4,
+        "pm10_medio_ug_m3": 38.0,
+        "no2_medio_ug_m3": 43.6,
+        "dias_ultrapassagem_oms": 68,
+        "altitude_m": 750,
+        "perfil": "Urbano / Eixo Castelo Branco",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.5283,
+          -23.4633
+        ]
+      },
+      "properties": {
+        "estacao": "Guarulhos - Paço Municipal",
+        "municipio": "Guarulhos",
+        "pm25_medio_ug_m3": 19.8,
+        "pm10_medio_ug_m3": 37.4,
+        "no2_medio_ug_m3": 41.9,
+        "dias_ultrapassagem_oms": 65,
+        "altitude_m": 760,
+        "perfil": "Urbano / Rodovias Dutra-Airpt",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -46.7583,
+          -23.6067
+        ]
+      },
+      "properties": {
+        "estacao": "Taboão da Serra",
+        "municipio": "Taboão da Serra",
+        "pm25_medio_ug_m3": 17.9,
+        "pm10_medio_ug_m3": 33.5,
+        "no2_medio_ug_m3": 35.7,
+        "dias_ultrapassagem_oms": 54,
+        "altitude_m": 740,
+        "perfil": "Eixo Rodoviário Régis Bittencourt",
+        "qualidade_ar": "Moderada (Meta Intermediária 4)"
+      }
+    }
+  ]
+}
