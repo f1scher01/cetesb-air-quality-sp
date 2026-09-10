@@ -1,115 +1,136 @@
-# Integração de Dados Geoespaciais: Qualidade do Ar CETESB e Sensoriamento Remoto (Missão MAIA-NASA)
+# Integração Geoespacial: Sensoriamento Remoto MAIA-NASA, Rede CETESB e Saúde Pública (SIH/SUS)
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
-[![QGIS](https://img.shields.io/badge/QGIS-3.x-589632?logo=qgis)](https://qgis.org/)
-[![Dados](https://img.shields.io/badge/Dados-CETESB%20%7C%20NASA%20MAIA-orange)](https://cetesb.sp.gov.br/)
+[![QGIS](https://img.shields.io/badge/QGIS-3.34%20LTR-589632?logo=qgis)](https://qgis.org/)
+[![NASA MAIA](https://img.shields.io/badge/Mission-NASA%20MAIA%20Early%20Adopter-black?logo=nasa)](https://maia.jpl.nasa.gov/)
+[![CETESB](https://img.shields.io/badge/Ground--Truth-CETESB%20RMSPO-orange)](https://cetesb.sp.gov.br/)
 [![CRS](https://img.shields.io/badge/CRS-EPSG%3A4326%20(WGS84)-lightgrey)](#)
 [![Status](https://img.shields.io/badge/Status-Estudo%20Prático%20Concluído-success)](#)
 
-Pipeline automatizado em **Python** e ambiente **QGIS** desenvolvido para ingestão, agregação temporal, georreferenciamento e validação cruzada de dados de material particulado fino ($PM_{2.5}$ e $PM_{10}$) na Região Metropolitana de São Paulo (RMSP).
+Pipeline automatizado em **Python** e ambiente **QGIS** desenvolvido para modelagem matricial, espacialização contínua de aerossóis atmosféricos ($PM_{2.5}$ e $PM_{10}$), especiação química e estimativa de risco relativo em saúde coletiva (internações hospitalares do SUS) na Região Metropolitana de São Paulo.
 
-> **Contexto de Aplicação:** Este repositório foi desenvolvido por iniciativa própria como estudo exploratório e demonstração prática de competências para o projeto de pesquisa aplicada em cooperação entre o **Núcleo de Sistemas Eletrônicos Embarcados (NSEE - Instituto Mauá de Tecnologia)** e a **Faculdade de Saúde Pública da USP (FSP-USP)**, focado no cruzamento de dados da **Missão MAIA da NASA** com indicadores de morbidade cardiorrespiratória (SIH/SUS).
+> **Contexto de Aplicação:** Desenvolvido como projeto preparatório e demonstração de competências para a vaga de estágio em pesquisa aplicada do **Núcleo de Sistemas Eletrônicos Embarcados (NSEE - Instituto Mauá de Tecnologia)** em cooperação com a **Faculdade de Saúde Pública da Universidade de São Paulo (FSP-USP)**, no âmbito do programa *Early Adopters* da **Missão MAIA da NASA**.
 
 ---
 
-## 🎯 Objetivo Científico e Tecnológico
+## 🎯 Fundamentação Científica & Desafio Tecnológico
 
-A Missão **MAIA (Multi-Angle Imager for Aerosols)** da NASA combina sensoriamento remoto por satélite com redes terrestres para mapear frações tóxicas de material particulado fino ($PM_{2.5}$). Para correlacionar esses dados com desfechos em saúde pública (internações do SUS), é mandatório construir um pipeline capaz de:
-
-1. **Ingestão e Harmonização:** Tratar matrizes multidimensionais de satélite (formatos matriciais NetCDF/HDF5) com resolução espacial própria (~1 km);
-2. **Calibração com Ground-Truth:** Cruzar as grades com as séries temporais de estações de superfície da **CETESB**;
-3. **Espacialização Cartográfica:** Estruturar camadas vetoriais e matriciais no **QGIS** para posterior agregação por distritos administrativos e setores censitários.
+A **Missão MAIA (Multi-Angle Imager for Aerosols)** da NASA investiga a correlação entre diferentes tipos de partículas em suspensão e desfechos cardiorrespiratórios. A integração entre sensoriamento remoto orbital e impacto epidemiológico terrestre requer três camadas metodológicas:
 
 ```mermaid
-flowchart LR
-    A[Satélite NASA MAIA<br>NetCDF / HDF5] -->|Recorte Bounding Box| C[Pipeline Python<br>NumPy / Pandas]
-    B[Rede Terrestre CETESB<br>Séries Temporais] -->|Agregação & Limpeza| C
-    C -->|GeoJSON / WGS84| D[Ambiente QGIS<br>Mapas Temáticos]
-    C -->|Métricas Estatísticas| E[Validação Cruzada<br>Bias, RMSE, MAE]
-    D --> F[Camada Epidemiológica<br>Morbidade SIH/SUS]
+flowchart TD
+    subgraph SATELLITE["1. Sensoriamento Remoto (NASA MAIA)"]
+        A[Matrizes NetCDF / HDF5<br>AOD Multipolarimétrico] --> B[Recorte Espacial Bounding Box<br>Grade Regular RMSP ~800m]
+    end
+
+    subgraph SURFACE["2. Rede Terrestre & Calibração (CETESB)"]
+        C[Séries Temporais de Superfície<br>17 Estações Automáticas] --> D[Filtro & Agregação Estatística<br>CONAMA 506/2024 e OMS 2021]
+        D --> E[Calibração Ground-Truth<br>Validação Cruzada RMSE/MAE]
+    end
+
+    subgraph GIS["3. Modelagem Espacial Contínua (QGIS & Python)"]
+        B & E --> F[Interpolação Espacial IDW<br>Superfície Contínua de Concentração]
+        F --> G[Especiação Química de Aerossóis<br>SO4, NO3, OC, EC, Poeira]
+        G --> H[Exportação Vetorial GeoJSON & QGIS Layouts]
+    end
+
+    subgraph HEALTH["4. Saúde Coletiva (SIH/SUS)"]
+        H --> I[Centróides dos Distritos Paulistanos<br>Carga Populacional]
+        I --> J[Funções Concentração-Resposta OMS<br>Risco Relativo RR e Casos Atribuíveis]
+    end
 ```
 
 ---
 
-## 🗺️ Visualização Espacial Gerada
+## 📐 Formulação Matemática & Física do Modelo
 
-O pipeline exporta a camada georreferenciada `cetesb_estacoes_qualidade_ar.geojson` e gera visualizações cartográficas de densidade e concentração:
+### 1. Relação Coluna Atmosférica $\leftrightarrow$ Concentração de Superfície
+Sensores orbitais medem a **Espessura Óptica de Aerossóis ($AOD$)**, uma grandeza adimensional que integra a extinção óptica em toda a coluna vertical:
 
-![Mapa Temático de PM2.5 na RMSP](mapa_qualidade_ar_sp.png)
+$$AOD = \int_0^\infty \sigma_{ext}(z) \, dz$$
 
-*Figura 1: Distribuição espacial da concentração média de $PM_{2.5}$ ($\mu g/m^3$) nas estações de monitoramento automático da CETESB na RMSP em relação às metas anuais da OMS (15 $\mu g/m^3$).*
+A estimativa da concentração de superfície $PM_{2.5}$ ($\mu g/m^3$) é parametrizada em função da altura da Camada Limite Planetária ($PBLH$) e do fator de crescimento higroscópico dos aerossóis $f(RH)$:
+
+$$PM_{2.5} \approx \eta \cdot \frac{AOD}{PBLH \cdot f(RH)}, \quad \text{onde } f(RH) = \left(1 - \frac{RH}{100}\right)^{-\gamma}$$
+
+### 2. Superfície Contínua por Inverso da Distância Ponderada (IDW)
+Para estimar a exposição fora das estações de monitoramento, implementou-se a interpolação geoespacial:
+
+$$\hat{Z}(s_0) = \frac{\sum_{i=1}^n w_i(s_0) Z(s_i)}{\sum_{i=1}^n w_i(s_0)}, \quad w_i(s_0) = \frac{1}{\|s_0 - s_i\|^p}, \quad (p=2)$$
+
+### 3. Estimativa de Impacto Epidemiológico (Concentração-Resposta)
+A quantificação do Risco Relativo ($RR$) para internações cardiovasculares (CID-10 I00-I99) e respiratórias (CID-10 J00-J99) segue a função log-linear da OMS com limiar de referência $C_0 = 5.0\,\mu g/m^3$:
+
+$$RR = \exp\left(\beta \cdot \max(0, C - C_0)\right)$$
+
+A Fração Atribuível Populacional ($PAF$) e as internações atribuíveis ($I_{atrib}$) são dadas por:
+
+$$PAF = \frac{RR - 1}{RR}, \quad I_{atrib} = I_{base} \cdot PAF$$
 
 ---
 
-## 📁 Estrutura do Repositório
+## 🗺️ Visualizações Geoespaciais & Resultados
+
+O pipeline gera composições cartográficas científicas de alta densidade (300 DPI):
+
+![Painel Integrado MAIA-NASA e CETESB](mapa_analise_integrada_sp.png)
+
+*Figura 1: A) Superfície contínua de concentração de $PM_{2.5}$ na Grande São Paulo com estações CETESB e impacto de internações por distrito. B) Especiação química estimada dos aerossóis (alvo central da instrumentação MAIA).*
+
+---
+
+## 📊 Relatório Epidemiológico por Distrito (Amostragem SIH/SUS)
+
+Estimativa anual de internações cardiorrespiratórias atribuíveis à poluição excedente em distritos-chave da capital:
+
+| Distrito Paulistano | $PM_{2.5}$ Interpolado ($\mu g/m^3$) | Risco Relativo Cardio ($RR$) | Risco Relativo Resp ($RR$) | Internações Atribuíveis / Ano |
+|:---|:---:|:---:|:---:|:---:|
+| **Itaquera** | 17.15 | 1.102 | 1.143 | **+1.062** |
+| **São Mateus** | 19.34 | 1.121 | 1.171 | **+1.011** |
+| **Campo Limpo** | 18.02 | 1.109 | 1.154 | **+795** |
+| **Santana / Tucuruvi** | 17.84 | 1.108 | 1.152 | **+674** |
+| **Mooca** | 19.78 | 1.125 | 1.176 | **+762** |
+| **Pinheiros** | 18.72 | 1.116 | 1.163 | **+563** |
+| **Sé / República** | 20.91 | 1.136 | 1.191 | **+484** |
+
+---
+
+## 📁 Estrutura Técnica do Repositório
 
 ```text
 cetesb-air-quality-sp/
-├── pipeline_cetesb_sp.py             # Pipeline ETL: leitura das estações, agregação e exportação GeoJSON/CSV
-├── demo_netcdf_spatial_clip.py      # Módulo demonstrativo de ingestão e recorte matricial NetCDF (MAIA)
-├── cetesb_estacoes_qualidade_ar.geojson # Camada vetorial (pontos) pronta para drag-and-drop no QGIS
-├── cetesb_estacoes_qualidade_ar.csv     # Base tabular estruturada com metadados geográficos e de poluentes
-├── validacao_satelite_cetesb.csv       # Tabela de resíduos entre satélite e estações terrestres
-└── mapa_qualidade_ar_sp.png            # Renderização cartográfica gerada via código
+├── maia_spatial_engine.py             # Motor mestre: física AOD, IDW, especiação e risco SIH/SUS
+├── pipeline_cetesb_sp.py              # Ingestão de estações CETESB, agregação e exportação GeoJSON/CSV
+├── demo_netcdf_spatial_clip.py       # Demonstração de recorte de matrizes NetCDF (MAIA L2/L3)
+├── qgis_style_loader.py               # Script para carregar e estilizar automaticamente no console QGIS
+├── cetesb_estacoes_qualidade_ar.geojson # Camada vetorial georreferenciada (WGS84 EPSG:4326)
+├── cetesb_estacoes_especiacao_maia.csv # Tabela com fracionamento químico (SO4, NO3, OC, EC, Dust)
+├── exposicao_e_saude_distritos_sp.csv # Dados de exposição e métricas epidemiológicas por distrito
+├── validacao_satelite_cetesb.csv       # Matriz de validação cruzada entre satélite e estações
+├── mapa_analise_integrada_sp.png      # Composição cartográfica analítica de alta resolução (300 DPI)
+└── mapa_qualidade_ar_sp.png           # Mapa temático clássico das estações de monitoramento
 ```
 
 ---
 
-## 📊 Principais Resultados e Métricas Extraídas
-
-Com base na amostragem das 17 estações automáticas da RMSP (Pinheiros, Congonhas, Cerqueira César, Parque D. Pedro II, Santana, Mooca, Mauá, Santo André-Capuava, São Caetano do Sul, Diadema, Osasco, Guarulhos, etc.):
-
-| Estação CETESB | Município | Perfil de Ocupação | $PM_{2.5}$ Médio ($\mu g/m^3$) | $PM_{10}$ Médio ($\mu g/m^3$) | Dias Excedentes OMS |
-|:---|:---|:---|:---:|:---:|:---:|
-| **Congonhas** | São Paulo | Urbano / Aeroportuário | **22.8** | 41.5 | 76 |
-| **Pq. D. Pedro II** | São Paulo | Centro Histórico / Tráfego | **21.5** | 39.4 | 71 |
-| **Santo André - Capuava**| Santo André | Polo Petroquímico / Industrial| **21.2** | 39.1 | 73 |
-| **Mauá** | Mauá | Eixo Industrial / ETE | **20.7** | 38.5 | 69 |
-| **Osasco** | Osasco | Eixo Viário Castelo Branco | **20.4** | 38.0 | 68 |
-| **Cerqueira César** | São Paulo | Corredor Urbano Central | **20.1** | 36.8 | 67 |
-| **Grajaú - Parelheiros** | São Paulo | Periférico / Mananciais | **12.3** | 24.1 | 31 |
-
-### Métricas da Validação Cruzada (Satélite vs Estação)
-* **Erro Médio Absoluto (MAE):** $2.54\,\mu g/m^3$
-* **Raiz do Erro Quadrático Médio (RMSE):** $3.00\,\mu g/m^3$
-* **Viés Médio (Bias):** $+0.05\,\mu g/m^3$
-
----
-
-## 🛠️ Como Abrir e Manipular no QGIS
-
-1. **Importar a camada:**
-   * Abra o QGIS (`Desktop`).
-   * Arraste o arquivo `cetesb_estacoes_qualidade_ar.geojson` diretamente para a área de trabalho do QGIS (Canvas).
-2. **Adicionar mapa de fundo (Basemap):**
-   * No menu do navegador lateral, expanda **XYZ Tiles** e clique duas vezes em **OpenStreetMap**.
-3. **Estilização Temática (Graduado):**
-   * Clique com o botão direito na camada `cetesb_estacoes_qualidade_ar` ➔ **Propriedades** ➔ **Simbologia**.
-   * Mude de **Símbolo Simples** para **Graduado**.
-   * Valor: selecione `pm25_medio_ug_m3`.
-   * Gradiente de Cores: selecione `YlOrRd` (Amarelo para Vermelho) ou `Viridis`.
-   * Método de Classificação: **Quebras Naturais (Jenks)** com 4 a 5 classes.
-   * Clique em **Classificar** e depois em **OK**.
-4. **Composição e Exportação:**
-   * Vá em **Projeto** ➔ **Novo Layout de Impressão** (`Ctrl+P`).
-   * Adicione o mapa, barra de escala, norte e legenda.
-   * Exporte como imagem (`.png`) ou PDF.
-
----
-
-## ⚙️ Como Executar os Scripts Localmente
+## 🛠️ Como Executar o Pipeline Localmente
 
 ```bash
-# 1. Clonar o repositório
+# 1. Clonar repositório
 git clone https://github.com/f1scher01/cetesb-air-quality-sp.git
 cd cetesb-air-quality-sp
 
-# 2. Executar o pipeline de processamento e mapa
-python pipeline_cetesb_sp.py
+# 2. Executar o motor geoespacial completo
+python maia_spatial_engine.py
 
 # 3. Executar o módulo de calibração espacial de satélite
 python demo_netcdf_spatial_clip.py
 ```
+
+### No QGIS:
+1. Abra o **QGIS 3.34 LTR**;
+2. Arraste `cetesb_estacoes_qualidade_ar.geojson` para o Canvas;
+3. Ou abra a console Python (`Ctrl+Alt+P`) e execute `qgis_style_loader.py` para carregamento imediato.
 
 ---
 
@@ -117,8 +138,8 @@ python demo_netcdf_spatial_clip.py
 
 **Lucas Fischer Paez**  
 *Graduando em Engenharia Mecânica — Instituto Mauá de Tecnologia (2º Ano)*  
-*Coeficiente de Rendimento: 8,23 | Lean Six Sigma Green Belt*  
-*Áreas de Interesse: Aquisição e Telemetria de Dados, Análise de Séries Temporais, Métodos Numéricos e Geoprocessamento.*
+*Coeficiente de Rendimento: 8,23 / 10 | Lean Six Sigma Green Belt*  
+*Pesquisa de Interesse: Telemetria, Sensoriamento Remoto, Dinâmica de Fluidos/Poluentes e Métodos Numéricos.*
 
 * **LinkedIn:** [linkedin.com/in/lucasfischerpaez](https://www.linkedin.com/in/lucasfischerpaez)
 * **GitHub:** [github.com/f1scher01](https://github.com/f1scher01)
