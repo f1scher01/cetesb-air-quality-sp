@@ -19,42 +19,47 @@ A **Missão MAIA (Multi-Angle Imager for Aerosols)** da NASA investiga a correla
 
 ```mermaid
 flowchart TD
-    subgraph ETAPA1 ["1. Sensoriamento Remoto (NASA MAIA)"]
-        direction TB
+    subgraph ETAPA1 [" "]
+        H1["🛰️ <b>1. Sensoriamento Remoto (NASA MAIA)</b>"]
         A["Matrizes Orbitais NetCDF / HDF5<br>(AOD Multipolarimétrico)"]
         B["Recorte Espacial Bounding Box<br>(Grade Regular RMSP ~800m)"]
-        A --> B
+        H1 --> A --> B
     end
 
-    subgraph ETAPA2 ["2. Rede Terrestre de Superfície (CETESB)"]
-        direction TB
+    subgraph ETAPA2 [" "]
+        H2["🏭 <b>2. Rede Terrestre de Superfície (CETESB)</b>"]
         C["Séries Temporais de Superfície<br>(17 Estações Automáticas)"]
         D["Filtro & Agregação Estatística<br>(CONAMA 506/2024 e OMS 2021)"]
         E["Calibração Ground-Truth<br>(Validação Cruzada RMSE / MAE)"]
-        C --> D --> E
+        H2 --> C --> D --> E
     end
 
-    B --> FUSAO["🔄 Fusão e Calibração dos Dados (Satélite + Estações)"]
+    B --> FUSAO["🔄 <b>Fusão e Calibração dos Dados (Satélite + Estações)</b>"]
     E --> FUSAO
 
-    subgraph ETAPA3 ["3. Modelagem Espacial Contínua (QGIS & Python)"]
-        direction TB
+    subgraph ETAPA3 [" "]
+        H3["🗺️ <b>3. Modelagem Espacial Contínua (QGIS & Python)</b>"]
         F["Interpolação Espacial IDW<br>(Superfície Contínua de Concentração)"]
         G["Especiação Química de Aerossóis<br>(SO₄²⁻, NO₃⁻, OC, EC, Poeira Mineral)"]
         H["Exportação Vetorial GeoJSON & Mapas QGIS"]
-        F --> G --> H
+        H3 --> F --> G --> H
     end
 
-    FUSAO --> F
+    FUSAO --> H3
 
-    subgraph ETAPA4 ["4. Avaliação Epidemiológica (SIH/SUS)"]
-        direction TB
+    subgraph ETAPA4 [" "]
+        H4["🏥 <b>4. Avaliação Epidemiológica (SIH/SUS)</b>"]
         I["Centróides dos Distritos Paulistanos<br>(Carga Populacional)"]
         J["Funções Concentração-Resposta OMS<br>(Risco Relativo RR e Internações Atribuíveis)"]
-        I --> J
+        H4 --> I --> J
     end
 
-    H --> I
+    H --> H4
+
+    classDef header fill:#1f6feb,stroke:#388bfd,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef fusao fill:#238636,stroke:#2ea043,stroke-width:2px,color:#ffffff,font-weight:bold;
+    class H1,H2,H3,H4 header;
+    class FUSAO fusao;
 ```
 
 ---
