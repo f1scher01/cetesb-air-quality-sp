@@ -170,12 +170,14 @@ def executar_pipeline_completo():
     
     # 4. Renderizacao do Painel Cientifico de Alta Densidade (PNG 300 DPI)
     print("-> Gerando composicao cartografica de alta definicao...")
-    fig = plt.figure(figsize=(16, 8), dpi=300)
-    gs = gridspec.GridSpec(1, 2, width_ratios=[1.2, 0.8], wspace=0.18)
+    fig = plt.figure(figsize=(19, 8.5), dpi=300)
+    gs = gridspec.GridSpec(1, 2, width_ratios=[1.15, 0.85], wspace=0.36)
     
     # PAINEL 1: Mapa Cartografico com Contornos de Poluicao e Estacoes
     ax1 = fig.add_subplot(gs[0])
     ax1.set_facecolor("#f8fafc")
+    ax1.set_xlim(-46.85, -46.38)
+    ax1.set_ylim(-23.82, -23.42)
     
     contour = ax1.contourf(
         glon, glat, pm25_superficie,
@@ -183,38 +185,54 @@ def executar_pipeline_completo():
         cmap="YlOrRd",
         alpha=0.85
     )
-    cbar = plt.colorbar(contour, ax=ax1, orientation="horizontal", pad=0.08, shrink=0.8)
-    cbar.set_label("Concentracao Estimada de PM2.5 (ug/m3) - Superficie Contínua", fontsize=9.5, fontweight="bold")
+    cbar = plt.colorbar(contour, ax=ax1, orientation="horizontal", pad=0.10, shrink=0.85)
+    cbar.set_label("Concentração Estimada de PM₂.₅ (µg/m³) — Superfície Contínua", fontsize=9.5, fontweight="bold")
     
     # Plotar estacoes CETESB
     ax1.scatter(
         df_estacoes["lon"], df_estacoes["lat"],
-        c="#1e3a8a", s=65, edgecolors="white", linewidths=1.5, zorder=5, label="Estacao CETESB"
+        c="#1e3a8a", s=65, edgecolors="white", linewidths=1.5, zorder=5, label="Estação CETESB"
     )
     
+    # Dicionario de offsets direcionados para evitar qualquer sobreposicao de rotulos
+    rotulo_offsets = {
+        "Sé / República": (0, 9),
+        "Pinheiros": (-22, -14),
+        "Mooca": (22, -14),
+        "Santo Amaro": (22, -14),
+        "Santana / Tucuruvi": (0, 9),
+        "Itaquera": (0, 9),
+        "Lapa": (0, 9),
+        "São Mateus": (0, -18),
+        "Campo Limpo": (-26, 9),
+        "Parelheiros": (0, 9)
+    }
+
     # Plotar distritos avaliados com rotulos
     for _, row in df_distritos.iterrows():
         ax1.plot(row["longitude"], row["latitude"], marker="s", color="#0f172a", markersize=6, zorder=6)
+        dist_name = row["distrito"]
+        offset = rotulo_offsets.get(dist_name, (0, 9))
         ax1.annotate(
-            f"{row['distrito']}\n(+{row['total_internacoes_atribuiveis']} int.)",
+            f"{dist_name}\n(+{row['total_internacoes_atribuiveis']} int.)",
             (row["longitude"], row["latitude"]),
-            xytext=(0, 7), textcoords="offset points",
+            xytext=offset, textcoords="offset points",
             ha="center", fontsize=7.2, fontweight="bold",
-            bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="#cbd5e1", alpha=0.88),
+            bbox=dict(boxstyle="round,pad=0.25", fc="white", ec="#94a3b8", alpha=0.92, lw=0.7),
             zorder=7
         )
         
-    ax1.set_title("A) Espacializacao de PM2.5 & Internacoes Atribuiveis (SIH/SUS)", fontsize=11, fontweight="bold", pad=10)
-    ax1.set_xlabel("Longitude (WGS84)", fontsize=9.5, fontweight="bold")
-    ax1.set_ylabel("Latitude (WGS84)", fontsize=9.5, fontweight="bold")
-    ax1.legend(loc="lower left", fontsize=8.5, framealpha=0.9)
+    ax1.set_title("A) Espacialização de PM₂.₅ & Internações Atribuíveis (SIH/SUS)", fontsize=11.5, fontweight="bold", pad=12)
+    ax1.set_xlabel("Longitude (WGS84)", fontsize=10, fontweight="bold")
+    ax1.set_ylabel("Latitude (WGS84)", fontsize=10, fontweight="bold")
+    ax1.legend(loc="lower left", fontsize=9, framealpha=0.92)
     
     # PAINEL 2: Especiacao Quimica de Aerossois (Alvo Central MAIA-NASA)
     ax2 = fig.add_subplot(gs[1])
     amostras_espec = df_estacoes[df_estacoes["estacao"].isin(["Congonhas", "Mauá", "Parque D. Pedro II", "Cerqueira César", "Grajaú - Parelheiros"])].copy()
     
     fracoes = ["sulfato_ug_m3", "nitrato_ug_m3", "carbono_organico_ug_m3", "carbono_elementar_ug_m3", "poeira_mineral_ug_m3"]
-    labels_fracoes = ["Sulfato (SO4)", "Nitrato (NO3)", "Carbono Orgânico (OC)", "Black Carbon (EC)", "Poeira Mineral"]
+    labels_fracoes = ["Sulfato (SO₄²⁻)", "Nitrato (NO₃⁻)", "Carbono Orgânico (OC)", "Black Carbon (EC)", "Poeira Mineral"]
     cores = ["#38bdf8", "#818cf8", "#fbbf24", "#334155", "#a3e635"]
     
     y_pos = np.arange(len(amostras_espec))
@@ -225,15 +243,15 @@ def executar_pipeline_completo():
         left += amostras_espec[frac].values
         
     ax2.set_yticks(y_pos)
-    ax2.set_yticklabels(amostras_espec["estacao"], fontsize=9, fontweight="bold")
+    ax2.set_yticklabels(amostras_espec["estacao"], fontsize=9.5, fontweight="bold")
+    ax2.tick_params(axis="y", pad=8)
     ax2.invert_yaxis()
-    ax2.set_xlabel("Concentracao de PM2.5 por Componente Quimico (ug/m3)", fontsize=9.5, fontweight="bold")
-    ax2.set_title("B) Fracionamento Especiado de Aerossois (Modelo MAIA-NASA)", fontsize=11, fontweight="bold", pad=10)
-    ax2.legend(loc="lower right", fontsize=8, framealpha=0.95)
+    ax2.set_xlabel("Concentração de PM₂.₅ por Componente Químico (µg/m³)", fontsize=10, fontweight="bold")
+    ax2.set_title("B) Fracionamento Especiado de Aerossóis (Modelo MAIA-NASA)", fontsize=11.5, fontweight="bold", pad=12)
+    ax2.legend(loc="lower right", fontsize=8.5, framealpha=0.95)
     ax2.grid(axis="x", linestyle="--", alpha=0.6)
     
     output_png = "mapa_analise_integrada_sp.png"
-    plt.tight_layout()
     plt.savefig(output_png, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"[OK] Painel de analise integrada salvo: {output_png}")

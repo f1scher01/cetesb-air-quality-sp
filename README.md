@@ -7,7 +7,7 @@
 [![CRS](https://img.shields.io/badge/CRS-EPSG%3A4326%20(WGS84)-lightgrey)](#)
 [![Status](https://img.shields.io/badge/Status-Estudo%20Prático%20Concluído-success)](#)
 
-Pipeline automatizado em **Python** e ambiente **QGIS** desenvolvido para modelagem matricial, espacialização contínua de aerossóis atmosféricos ($PM_{2.5}$ e $PM_{10}$), especiação química e estimativa de risco relativo em saúde coletiva (internações hospitalares do SUS) na Região Metropolitana de São Paulo.
+Pipeline automatizado em **Python** e ambiente **QGIS** desenvolvido para modelagem matricial, espacialização contínua de aerossóis atmosféricos (PM₂.₅ e PM₁₀), especiação química e estimativa de risco relativo em saúde coletiva (internações hospitalares do SUS) na Região Metropolitana de São Paulo.
 
 > **Contexto de Aplicação:** Desenvolvido como projeto preparatório e demonstração de competências para a vaga de estágio em pesquisa aplicada do **Núcleo de Sistemas Eletrônicos Embarcados (NSEE - Instituto Mauá de Tecnologia)** em cooperação com a **Faculdade de Saúde Pública da Universidade de São Paulo (FSP-USP)**, no âmbito do programa *Early Adopters* da **Missão MAIA da NASA**.
 
@@ -15,29 +15,46 @@ Pipeline automatizado em **Python** e ambiente **QGIS** desenvolvido para modela
 
 ## 🎯 Fundamentação Científica & Desafio Tecnológico
 
-A **Missão MAIA (Multi-Angle Imager for Aerosols)** da NASA investiga a correlação entre diferentes tipos de partículas em suspensão e desfechos cardiorrespiratórios. A integração entre sensoriamento remoto orbital e impacto epidemiológico terrestre requer três camadas metodológicas:
+A **Missão MAIA (Multi-Angle Imager for Aerosols)** da NASA investiga a correlação entre diferentes tipos de partículas em suspensão e desfechos cardiorrespiratórios. A integração entre sensoriamento remoto orbital e impacto epidemiológico terrestre é estruturada em quatro etapas metodológicas:
 
 ```mermaid
 flowchart TD
-    subgraph SATELLITE["1. Sensoriamento Remoto (NASA MAIA)"]
-        A[Matrizes NetCDF / HDF5<br>AOD Multipolarimétrico] --> B[Recorte Espacial Bounding Box<br>Grade Regular RMSP ~800m]
+    subgraph ETAPA1 ["1. Sensoriamento Remoto (NASA MAIA)"]
+        direction TB
+        A["Matrizes Orbitais NetCDF / HDF5<br>(AOD Multipolarimétrico)"]
+        B["Recorte Espacial Bounding Box<br>(Grade Regular RMSP ~800m)"]
+        A --> B
     end
 
-    subgraph SURFACE["2. Rede Terrestre & Calibração (CETESB)"]
-        C[Séries Temporais de Superfície<br>17 Estações Automáticas] --> D[Filtro & Agregação Estatística<br>CONAMA 506/2024 e OMS 2021]
-        D --> E[Calibração Ground-Truth<br>Validação Cruzada RMSE/MAE]
+    subgraph ETAPA2 ["2. Rede Terrestre de Superfície (CETESB)"]
+        direction TB
+        C["Séries Temporais de Superfície<br>(17 Estações Automáticas)"]
+        D["Filtro & Agregação Estatística<br>(CONAMA 506/2024 e OMS 2021)"]
+        E["Calibração Ground-Truth<br>(Validação Cruzada RMSE / MAE)"]
+        C --> D --> E
     end
 
-    subgraph GIS["3. Modelagem Espacial Contínua (QGIS & Python)"]
-        B & E --> F[Interpolação Espacial IDW<br>Superfície Contínua de Concentração]
-        F --> G[Especiação Química de Aerossóis<br>SO4, NO3, OC, EC, Poeira]
-        G --> H[Exportação Vetorial GeoJSON & QGIS Layouts]
+    B --> FUSAO["🔄 Fusão e Calibração dos Dados (Satélite + Estações)"]
+    E --> FUSAO
+
+    subgraph ETAPA3 ["3. Modelagem Espacial Contínua (QGIS & Python)"]
+        direction TB
+        F["Interpolação Espacial IDW<br>(Superfície Contínua de Concentração)"]
+        G["Especiação Química de Aerossóis<br>(SO₄²⁻, NO₃⁻, OC, EC, Poeira Mineral)"]
+        H["Exportação Vetorial GeoJSON & Mapas QGIS"]
+        F --> G --> H
     end
 
-    subgraph HEALTH["4. Saúde Coletiva (SIH/SUS)"]
-        H --> I[Centróides dos Distritos Paulistanos<br>Carga Populacional]
-        I --> J[Funções Concentração-Resposta OMS<br>Risco Relativo RR e Casos Atribuíveis]
+    FUSAO --> F
+
+    subgraph ETAPA4 ["4. Avaliação Epidemiológica (SIH/SUS)"]
+        direction TB
+        I["Centróides dos Distritos Paulistanos<br>(Carga Populacional)"]
+        J["Funções Concentração-Resposta OMS<br>(Risco Relativo RR e Internações Atribuíveis)"]
+        I --> J
     end
+
+    H --> I
 ```
 
 ---
@@ -49,7 +66,7 @@ Sensores orbitais medem a **Espessura Óptica de Aerossóis ($AOD$)**, uma grand
 
 $$AOD = \int_0^\infty \sigma_{ext}(z) \, dz$$
 
-A estimativa da concentração de superfície $PM_{2.5}$ ($\mu g/m^3$) é parametrizada em função da altura da Camada Limite Planetária ($PBLH$) e do fator de crescimento higroscópico dos aerossóis $f(RH)$:
+A estimativa da concentração de superfície de PM₂.₅ ($\mu g/m^3$) é parametrizada em função da altura da Camada Limite Planetária ($PBLH$) e do fator de crescimento higroscópico dos aerossóis $f(RH)$:
 
 $$PM_{2.5} \approx \eta \cdot \frac{AOD}{PBLH \cdot f(RH)}, \quad \text{onde } f(RH) = \left(1 - \frac{RH}{100}\right)^{-\gamma}$$
 
@@ -59,7 +76,7 @@ Para estimar a exposição fora das estações de monitoramento, implementou-se 
 $$\hat{Z}(s_0) = \frac{\sum_{i=1}^n w_i(s_0) Z(s_i)}{\sum_{i=1}^n w_i(s_0)}, \quad w_i(s_0) = \frac{1}{\|s_0 - s_i\|^p}, \quad (p=2)$$
 
 ### 3. Estimativa de Impacto Epidemiológico (Concentração-Resposta)
-A quantificação do Risco Relativo ($RR$) para internações cardiovasculares (CID-10 I00-I99) e respiratórias (CID-10 J00-J99) segue a função log-linear da OMS com limiar de referência $C_0 = 5.0\,\mu g/m^3$:
+A quantificação do Risco Relativo ($RR$) para internações cardiovasculares (CID-10 I00-I99) e respiratórias (CID-10 J00-J99) segue a função log-linear da OMS com limiar de referência $C_0 = 5,0\,\mu g/m^3$:
 
 $$RR = \exp\left(\beta \cdot \max(0, C - C_0)\right)$$
 
@@ -75,7 +92,7 @@ O pipeline gera composições cartográficas científicas de alta densidade (300
 
 ![Painel Integrado MAIA-NASA e CETESB](mapa_analise_integrada_sp.png)
 
-*Figura 1: A) Superfície contínua de concentração de $PM_{2.5}$ na Grande São Paulo com estações CETESB e impacto de internações por distrito. B) Especiação química estimada dos aerossóis (alvo central da instrumentação MAIA).*
+**Figura 1:** **A)** Superfície contínua de concentração de PM₂.₅ na Grande São Paulo com estações CETESB e impacto de internações por distrito. **B)** Especiação química estimada dos aerossóis (alvo central da instrumentação MAIA).
 
 ---
 
@@ -83,8 +100,8 @@ O pipeline gera composições cartográficas científicas de alta densidade (300
 
 Estimativa anual de internações cardiorrespiratórias atribuíveis à poluição excedente em distritos-chave da capital:
 
-| Distrito Paulistano | $PM_{2.5}$ Interpolado ($\mu g/m^3$) | Risco Relativo Cardio ($RR$) | Risco Relativo Resp ($RR$) | Internações Atribuíveis / Ano |
-|:---|:---:|:---:|:---:|:---:|
+| Distrito Paulistano | PM₂.₅ Médio (µg/m³) | RR Cardiovascular | RR Respiratório | Internações Atribuíveis / Ano |
+| :--- | :---: | :---: | :---: | :---: |
 | **Itaquera** | 17.15 | 1.102 | 1.143 | **+1.062** |
 | **São Mateus** | 19.34 | 1.121 | 1.171 | **+1.011** |
 | **Campo Limpo** | 18.02 | 1.109 | 1.154 | **+795** |
