@@ -1,40 +1,39 @@
-# Aerossóis na RMSP: GOES-19 × CETESB × QGIS
+# Poluição do ar e saúde na RMSP: GOES-19 × CETESB × SIH/SUS × QGIS
 
-### Pipeline com dados reais de satélite, rede de superfície e limites oficiais
+### Pipeline com dados reais de satélite, rede de superfície, internações hospitalares e limites oficiais
 
 [![Dados](https://img.shields.io/badge/Dados-REAIS-2ea44f)](#fontes)
 [![GDAL](https://img.shields.io/badge/GDAL-NetCDF--4%20%E2%86%92%20GeoTIFF-5CAE58)](#decisões-técnicas)
 [![QGIS](https://img.shields.io/badge/QGIS-3.44%20LTR%20%C2%B7%20PyQGIS-589632?logo=qgis&logoColor=white)](#como-executar)
-[![Status](https://img.shields.io/badge/Status-estudo%20de%20caso%20em%20expansão-blue)](#próximos-passos)
+[![SIH/SUS](https://img.shields.io/badge/SIH%2FSUS-230%20mil%20interna%C3%A7%C3%B5es-0b5fa5)](#2-internações-respiratórias-e-circulatórias-no-sus)
 
-Ingestão de **profundidade óptica de aerossóis (AOD 550 nm)** do satélite GOES-19 em NetCDF-4,
-reprojeção da grade geoestacionária para a Região Metropolitana de São Paulo, coleta automatizada
-da **rede automática da CETESB**, colocalização satélite × estação e montagem do mapa final no
-**QGIS por script**, sem abrir a interface.
+Este repositório integra, para a Região Metropolitana de São Paulo:
 
-Tudo roda com o Python que acompanha o QGIS 3.44 LTR. Nenhum `pip install` é necessário.
+- **profundidade óptica de aerossóis (AOD 550 nm)** do satélite GOES-19, lida em NetCDF-4 e reprojetada da grade geoestacionária;
+- **MP2,5 da rede automática da CETESB**, coletado do serviço público que alimenta o QUALAR;
+- **internações do SUS** por doenças respiratórias e circulatórias, lidas direto dos arquivos DBC do DATASUS;
+- **limites municipais e população estimada** do IBGE;
 
-> **Contexto.** A missão MAIA (NASA/ASI) vai produzir mapas diários de MP2,5 especiado a 1 km,
-> com lançamento hoje previsto para 2027–2028. Enquanto não há dado MAIA, este repositório
-> monta a cadeia de processamento com os produtos que já existem: mesmo tipo de grandeza (AOD),
-> mesmo formato de arquivo (NetCDF/HDF5) e o mesmo problema de fundo, que é ligar coluna
-> atmosférica a concentração de superfície.
+e monta os mapas no **QGIS por script**, sem abrir a interface. O Python que acompanha o QGIS 3.44 LTR roda tudo; a única dependência extra é o descompressor dos arquivos do DATASUS.
+
+> **Contexto.** A missão MAIA (NASA/ASI) vai produzir mapas diários de MP2,5 especiado a 1 km para
+> estudos de saúde, com lançamento previsto hoje para 2027–2028. Enquanto não há dado MAIA, este
+> repositório monta a cadeia completa com os produtos que já existem: mesmo tipo de grandeza (AOD),
+> mesmo formato de arquivo (NetCDF/HDF5), a mesma rede de superfície e a mesma base de desfecho
+> hospitalar.
 
 ---
 
-## Resultado
+## 1. Satélite × superfície
 
-![Mapa montado pelo PyQGIS](figuras/mapa_qgis_aod_mp25.png)
+![Mapa AOD × MP2,5 montado pelo PyQGIS](figuras/mapa_qgis_aod_mp25.png)
 
 **Figura 1.** AOD do GOES-19 às 19:00 UTC de 11/09/2026 (pixels com DQF > 1 removidos, em branco)
-e MP2,5 das estações da CETESB na mesma hora. Layout gerado por `qgis_mapa.py` em SIRGAS 2000 /
-UTM 23S.
+e MP2,5 das estações da CETESB na mesma hora.
 
 ![Dispersão AOD × MP2,5](figuras/colocalizacao_aod_mp25.png)
 
-**Figura 2.** Colocalização das 13 estações que tinham ao menos 3 pixels válidos na janela 3×3.
-
-### O que o estudo de caso mostra
+**Figura 2.** Colocalização das 13 estações com ao menos 3 pixels válidos na janela 3×3.
 
 | Grandeza | Valor |
 | :--- | :--- |
@@ -45,22 +44,59 @@ UTM 23S.
 | Pares válidos (≥ 3 pixels na janela) | 13 |
 | Correlação | Pearson r = 0,09 (p = 0,77) · Spearman ρ = −0,09 (p = 0,76) |
 
-**Não há correlação neste scan, e isso é o resultado esperado.** Quatro razões, em ordem de peso:
+**Não há correlação neste scan, e isso é o esperado.** Quatro razões, em ordem de peso:
 
 1. **Grandezas diferentes.** AOD integra a extinção da coluna inteira num instante; MP2,5 é massa
-   junto ao solo. A ponte entre as duas passa pela altura da camada limite e pela umidade, que
-   este estudo ainda não usa.
+   junto ao solo. A ponte entre as duas passa pela altura da camada limite e pela umidade.
 2. **Escalas de tempo diferentes.** O índice da CETESB para MP2,5 acompanha média de 24 h; o scan
    dura 10 minutos.
-3. **Faixa estreita.** As 13 estações ficaram entre 6 e 19 µg/m³ num dia limpo. Com pouca variância
-   em y e n = 13, qualquer correlação real ficaria abaixo do ruído.
+3. **Faixa estreita.** As 13 estações ficaram entre 6 e 19 µg/m³ num dia limpo; com n = 13, qualquer
+   correlação real ficaria abaixo do ruído.
 4. **Viés de superfície urbana e borda de nuvem.** Os maiores AOD (0,36–0,39) aparecem em Mooca,
-   Parque D. Pedro II e Santana, no centro urbano, com 4 a 6 pixels válidos em 9. Superfície urbana
-   clara e contaminação por borda de nuvem são fontes conhecidas de superestimativa em algoritmos
-   de AOD sobre terra.
+   Parque D. Pedro II e Santana, com 4 a 6 pixels válidos em 9.
 
-Um único scan serve para validar a **cadeia de processamento**, não a relação física. A relação
-só pode ser testada com uma série de dias claros, que é o próximo passo.
+Um scan valida a cadeia de processamento, não a relação física.
+
+---
+
+## 2. Internações respiratórias e circulatórias no SUS
+
+![Mapa coroplético das internações respiratórias](figuras/mapa_qgis_internacoes_resp.png)
+
+**Figura 3.** Taxa bruta anualizada de internações respiratórias (CID-10 J00–J99) por município de
+residência, em 12 competências. Quebras naturais (Jenks), montado por `qgis_mapa_saude.py`.
+
+![Série mensal das internações](figuras/sih_serie_mensal_rmsp.png)
+
+**Figura 4.** Internações mensais de residentes da RMSP por competência do SIH/SUS.
+
+| Indicador (jul/2025 a jun/2026, residentes da RMSP) | Valor |
+| :--- | :--- |
+| AIH aprovadas no estado nas 12 competências | 2,98 milhões |
+| Internações respiratórias (J00–J99) | 102.034 |
+| Internações circulatórias (I00–I99) | 128.442 |
+| Pneumonias (J12–J18) entre as respiratórias | 40.369 (39,6 %) |
+| DPOC e asma (J40–J47) | 15.083 (14,8 %) |
+| Crianças de 0 a 4 anos / idosos de 65+ | 31,9 % / 26,1 % |
+| Letalidade hospitalar respiratória | 9,4 % |
+| Permanência média e valor pago (respiratórias) | 6,3 dias · R$ 160,7 milhões |
+| Taxa respiratória na RMSP | 47,3 por 10 mil hab./ano (capital: 48,3) |
+| Menor e maior taxa municipal | Rio Grande da Serra 23,6 · Juquitiba 107,8 |
+
+**O que os números mostram e o que não mostram.**
+
+- **Sazonalidade forte.** As internações respiratórias caem de 9.673 (out/2025) para 5.882
+  (fev/2026) e sobem até 10.360 (mai/2026), um fator de 1,8. Outono e inverno concentram a
+  circulação de vírus respiratórios e também o período de pior dispersão atmosférica em São Paulo.
+  Com dado mensal agregado, os dois efeitos são indistinguíveis. Separá-los exige série diária,
+  defasagem e ajuste por temperatura, que é justamente o desenho de um estudo de séries temporais.
+- **A geografia não segue a poluição.** As taxas variam 4,6 vezes entre municípios, com os maiores
+  valores na periferia (Juquitiba, Francisco Morato, Salesópolis, Embu-Guaçu). Taxa bruta de
+  internação no SUS reflete a dependência do sistema público, a estrutura etária e a oferta de
+  leitos, que este indicador não padroniza.
+- **O satélite ainda não entra no modelo.** A camada integrada traz o AOD médio de cada município
+  (26 dos 39 com pixel válido no scan de 11/09), mas um scan não representa a exposição de um ano.
+  A junção existe para que o modelo possa ser construído sobre ela, não para sugerir associação.
 
 ---
 
@@ -69,10 +105,12 @@ só pode ser testada com uma série de dias claros, que é o próximo passo.
 | Etapa | Script | Fonte | Saída |
 | :--- | :--- | :--- | :--- |
 | 1. Coleta de superfície | `coleta_cetesb.py` | CETESB, serviço ArcGIS público do QUALAR | série horária acumulada (CSV), estações (GeoJSON) |
-| 2. Limites oficiais | `limites_ibge.py` | IBGE, API de malhas e de localidades | 39 municípios da RMSP (GeoJSON) |
+| 2. Limites e população | `limites_ibge.py` | IBGE, APIs de malhas, localidades e SIDRA 6579 | 39 municípios com população estimada (GeoJSON) |
 | 3. Satélite | `goes_aod.py` | NOAA GOES-19 ABI L2 AOD, bucket público | AOD recortado e filtrado (GeoTIFF) |
 | 4. Colocalização | `colocalizacao.py` | saídas 1 e 3 | pares AOD × MP2,5 (CSV), dispersão (PNG) |
-| 5. Cartografia | `qgis_mapa.py` | saídas 1 a 4 | layout exportado (PNG) e projeto `.qgz` editável |
+| 5. Internações | `sih_sus.py` | DATASUS, FTP público do SIH/SUS | internações agregadas por município e mês (CSV) |
+| 6. Integração | `analise_saude.py` | saídas 2, 3 e 5 | camada municipal integrada (GeoPackage), série mensal (PNG) |
+| 7. Cartografia | `qgis_mapa.py`, `qgis_mapa_saude.py` | saídas anteriores | layouts exportados (PNG) e projetos `.qgz` editáveis |
 
 Parâmetros e justificativas ficam centralizados em `config.py`.
 
@@ -80,112 +118,130 @@ Parâmetros e justificativas ficam centralizados em `config.py`.
 
 ## Decisões técnicas
 
-**Leitura do NetCDF pelo driver do GDAL, não por xarray.** O GDAL embarcado no QGIS lê a
-projeção geoestacionária do ABI com o eixo de varredura correto (`+proj=geos +sweep=x +h=35786023`),
-aplica `scale_factor` e `add_offset` da própria variável e entrega a matriz já georreferenciada.
-Isso mantém o pipeline inteiro dentro de uma instalação padrão do QGIS.
+### Satélite
 
-**Vizinho mais próximo na reprojeção.** O `DQF` é categórico: interpolar a flag de qualidade não
-tem significado físico. O AOD usa o mesmo método para continuar alinhado pixel a pixel com a sua
-flag. A grade de saída tem 0,02° (~2,1 km), próxima da resolução nativa do ABI sobre São Paulo.
+**Leitura pelo driver netCDF do GDAL.** O GDAL embarcado no QGIS lê a projeção geoestacionária do
+ABI com o eixo de varredura correto (`+proj=geos +sweep=x +h=35786023`), aplica `scale_factor` e
+`add_offset` da variável e entrega a matriz georreferenciada, sem dependências fora do QGIS.
 
-**Filtro DQF ≤ 1.** Mantém retrievals de alta e média qualidade, conforme a recomendação da NOAA
-para uso quantitativo.
+**Vizinho mais próximo na reprojeção.** O `DQF` é categórico e não pode ser interpolado; o AOD usa
+o mesmo método para continuar alinhado pixel a pixel com a sua flag. Grade de saída de 0,02°
+(~2,1 km), próxima da resolução nativa do ABI sobre São Paulo.
 
-**Janela 3×3 com mínimo de 3 pixels válidos.** Um único pixel é sensível a ruído e à borda de
-nuvem; a mediana de uma janela de ~6 km reduz as duas coisas sem apagar o gradiente urbano.
+**Filtro DQF ≤ 1** (alta e média qualidade) e **janela 3×3 com mínimo de 3 pixels válidos** na
+colocalização, para reduzir ruído e contaminação por borda de nuvem.
 
-**Projeto em EPSG:31983.** As camadas continuam em coordenadas geográficas, mas o layout usa
-SIRGAS 2000 / UTM 23S para que a barra de escala seja métrica.
+### CETESB: o serviço publica índice, não concentração
 
-### O serviço da CETESB publica índice, não concentração
+As camadas do mapa do QUALAR trazem o **índice de qualidade do ar**, adimensional.
+`coleta_cetesb.py` inverte a função linear segmentada para µg/m³, com pontos de quebra
+**verificados nos próprios dados**: na faixa N1 só aparecem os índices {3, 5, 8, 11, 13, 16, 19,
+21, 24, 27, 29, 32, 35, 37, 40}, exatamente `round(40·C/15)` para C inteiro de 1 a 15 µg/m³. Isso
+põe o limite de N1 em 15 µg/m³, o padrão final da Resolução CONAMA 506/2024.
 
-As camadas do mapa do QUALAR trazem o **índice de qualidade do ar** (adimensional). Comparar
-índice direto com AOD seria misturar unidades, então `coleta_cetesb.py` inverte a função linear
-segmentada do índice para µg/m³.
+A Tabela 2.7 do *Relatório de Metodologia para Avaliação da Qualidade do Ar* (CETESB, 2025) lista
+N1 até 25 µg/m³; com esse limite apareceriam índices como 2, 6 e 10, que nunca ocorrem. O pipeline
+segue os dados e registra a divergência em `config.py`. Incerteza da inversão: ±0,19 µg/m³ em N1.
 
-Os pontos de quebra foram **verificados nos próprios dados**. Na faixa N1, o serviço só publica os
-índices {3, 5, 8, 11, 13, 16, 19, 21, 24, 27, 29, 32, 35, 37, 40}. Essa é exatamente a sequência
-`round(40·C/15)` para C inteiro de 1 a 15 µg/m³, ou seja, N1 vai até 15 µg/m³, o padrão final da
-Resolução CONAMA 506/2024.
+### SIH/SUS
 
-Há uma divergência documentada: a Tabela 2.7 do *Relatório de Metodologia para Avaliação da
-Qualidade do Ar* (CETESB, 2025) lista N1 até 25 µg/m³. Com esse limite, o serviço publicaria
-índices como 2, 6 e 10, que nunca aparecem. O pipeline segue o que os dados mostram e deixa a
-hipótese registrada em `config.py` para confirmação contra uma exportação do QUALAR em µg/m³.
+**Leitura do DBF sem biblioteca.** Depois de descomprimido, o arquivo é um dBase III de registros
+com largura fixa. `sih_sus.py` lê os descritores de campo do cabeçalho, monta um `dtype`
+estruturado do NumPy e mapeia o arquivo em memória, extraindo só as 9 colunas usadas das 114
+disponíveis. Um mês com 250 mil AIH e 167 MB é lido em poucos segundos.
 
-A inversão tem incerteza de meio passo de índice: ±0,19 µg/m³ em N1 e ±0,44 µg/m³ em N2.
+**Só AIH do tipo 1.** O campo `IDENT` distingue a AIH principal (1) das de prorrogação de longa
+permanência (5). Contar as duas duplicaria internações longas.
+
+**Residência, não hospital.** O filtro usa `MUNIC_RES`, o código IBGE de 6 dígitos (sem dígito
+verificador) do município onde o paciente mora, que é a unidade de exposição.
+
+**Competência não é data da internação.** Cada arquivo reúne AIH aprovadas naquele mês; internações
+longas ou cobranças atrasadas aparecem em competências posteriores. A série da Figura 4 é por
+competência; o CSV agregado guarda também o mês de internação (`DT_INTER`) para análises que
+precisem dele.
+
+**Privacidade.** Os arquivos brutos trazem CEP e data de nascimento. Eles ficam em
+`dados/brutos/sih/`, fora do git, o DBF descomprimido é apagado após a leitura e só a tabela
+agregada por município, mês, capítulo e faixa etária é versionada.
+
+### Cartografia
+
+Projetos em **SIRGAS 2000 / UTM 23S (EPSG:31983)** para barra de escala métrica. Coroplético em
+**quebras naturais (Jenks)** porque a distribuição das taxas é assimétrica, com cauda nos municípios
+pequenos.
 
 ---
 
 ## Como executar
 
-Pré-requisito: **QGIS 3.44 LTR** instalado (OSGeo4W ou instalador MSI). O Python dele já traz
-GDAL, NumPy, Pandas, SciPy, Matplotlib e Requests.
+Pré-requisito: **QGIS 3.44 LTR**. O Python dele já traz GDAL, NumPy, Pandas, SciPy, Matplotlib e
+Requests. Uma vez só, para ler os arquivos do DATASUS:
 
 ```bat
-executar_pipeline.bat 2026-09-11T19
+python -m pip install --user datasus-dbc
+```
+
+Pipeline completo (hora UTC do scan e competências inicial e final do SIH):
+
+```bat
+executar_pipeline.bat 2026-09-11T19 2507 2606
 ```
 
 Ou etapa por etapa, pelo `python-qgis-ltr.bat` da instalação:
 
 ```bat
 python coleta_cetesb.py              :: últimas 48 h da CETESB, acumulando na série
-python limites_ibge.py               :: municípios da RMSP
+python limites_ibge.py               :: municípios e população da RMSP
 python goes_aod.py 2026-09-11T19     :: baixa o primeiro scan da hora (UTC) e recorta
 python colocalizacao.py              :: pares e estatística
-python qgis_mapa.py                  :: layout PNG + projeto .qgz
+python sih_sus.py 2507 2606          :: 12 competências do SIH/SUS (~240 MB, ~7 min)
+python analise_saude.py              :: camada municipal integrada e série mensal
+python qgis_mapa.py                  :: mapa AOD × MP2,5
+python qgis_mapa_saude.py            :: mapa das internações
 ```
 
-A janela da CETESB é móvel (48 h). Para montar histórico, agende `coleta_cetesb.py` uma vez por dia
-no Agendador de Tarefas do Windows. Horas já coletadas não são duplicadas.
-
-O projeto `qgis/rmsp_aod_mp25.qgz` abre no QGIS com as três camadas e o layout prontos para ajuste manual.
+A janela da CETESB é móvel (48 h): para montar histórico, agende `coleta_cetesb.py` uma vez por
+dia no Agendador de Tarefas do Windows. Os projetos `qgis/*.qgz` abrem no QGIS com camadas e
+layouts prontos para ajuste manual.
 
 ---
 
 ## Fontes
 
-- **NOAA GOES-19 ABI L2+ Aerosol Optical Depth** (`ABI-L2-AODF`), NOAA Open Data Dissemination,
-  bucket `noaa-goes19` na AWS. Acesso anônimo.
-- **CETESB**, serviço ArcGIS REST `QUALAR/CETESB_QUALAR`, camadas horárias de 48 h. Acesso anônimo.
-- **CETESB (2025)**, *Relatório de Metodologia para Avaliação da Qualidade do Ar*, Tabela 2.7.
-- **IBGE**, API de malhas territoriais v3 e API de localidades (região metropolitana 04901).
+- **NOAA GOES-19 ABI L2+ Aerosol Optical Depth** (`ABI-L2-AODF`), NOAA Open Data Dissemination, bucket `noaa-goes19`.
+- **CETESB**, serviço ArcGIS REST `QUALAR/CETESB_QUALAR`; *Relatório de Metodologia para Avaliação da Qualidade do Ar* (2025), Tabela 2.7.
+- **DATASUS**, Sistema de Informações Hospitalares do SUS, arquivos `RDSP<AAMM>.dbc`.
+- **IBGE**, API de malhas territoriais v3, API de localidades (região metropolitana 04901) e SIDRA, tabela 6579.
 
 ---
 
 ## Limitações
 
-- Um único scan colocalizado até agora; nenhuma conclusão física sai de n = 13.
+- Um único scan colocalizado; nenhuma conclusão física sai de n = 13.
 - MP2,5 vem da inversão do índice publicado, não da medição original em µg/m³.
-- Não há correção por camada limite nem por umidade na relação AOD → MP2,5.
-- O AOD geoestacionário tem ~2–3 km sobre São Paulo e sofre com superfície urbana clara; produtos
-  polares como o MAIAC (MODIS, 1 km) são mais adequados para gradiente intraurbano.
+- Taxas de internação brutas: sem padronização por idade e sem ajuste pela cobertura de planos privados.
+- Internações de residentes da RMSP em hospitais fora do estado de São Paulo não entram nos arquivos RDSP.
+- O AOD geoestacionário tem ~2–3 km sobre São Paulo e sofre com superfície urbana clara.
 
 ## Próximos passos
 
-1. **Série de dias claros.** Agendar a coleta e rodar a colocalização sobre semanas, para ter
-   variância e n suficientes.
-2. **Confirmar os pontos de quebra** com uma exportação do QUALAR em µg/m³ (requer cadastro).
-3. **Normalizar o AOD pela camada limite** com PBLH do ERA5 ou do MERRA-2, testando
-   MP2,5 ∝ AOD / PBLH.
-4. **Comparar com MAIAC MCD19A2** (NASA Earthdata, HDF-EOS) na mesma data, para medir o ganho de
-   resolução no centro urbano.
-5. **Desfecho em saúde com dado real.** Internações por capítulos I e J da CID-10 no SIH/SUS,
-   disponíveis no FTP público do DATASUS.
+1. **Série diária de exposição.** Acumular a coleta da CETESB e obter o histórico em µg/m³ pela
+   exportação do QUALAR (requer cadastro), que também confirma os pontos de quebra do índice.
+2. **Modelo de séries temporais.** Internações diárias por `DT_INTER` contra MP2,5 com defasagens de
+   0 a 7 dias, ajustado por temperatura, umidade, dia da semana e sazonalidade.
+3. **Padronização por idade** das taxas municipais com a pirâmide etária do Censo 2022.
+4. **AOD normalizado pela camada limite** (PBLH do ERA5 ou do MERRA-2) e comparação com o MAIAC
+   MCD19A2 de 1 km, para medir o ganho de resolução no centro urbano.
 
 ---
 
 ## Legado: versão sintética
 
-A primeira versão deste repositório demonstrava o método com **valores escritos à mão** (estações,
-internações e uma grade "de satélite" gerada com `numpy.random`). Ela foi mantida em
-[`legado_sintetico/`](legado_sintetico/) como registro, com cada arquivo rotulado como sintético.
-Nada daquela pasta alimenta o pipeline acima.
-
-A parte que continua válida é a formulação: IDW implementado à mão e a função
-concentração-resposta log-linear (RR, fração atribuível), que serão reaplicadas quando houver
-superfície de MP2,5 e internações reais.
+A primeira versão deste repositório demonstrava o método com **valores escritos à mão**. Ela foi
+mantida em [`legado_sintetico/`](legado_sintetico/) como registro, com cada arquivo rotulado como
+sintético. Nada daquela pasta alimenta o pipeline acima. O que continua válido é a formulação
+(IDW implementado à mão e função concentração-resposta log-linear), a ser reaplicada sobre dado real.
 
 ---
 

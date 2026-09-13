@@ -11,6 +11,10 @@ env/
 dados/brutos/*.nc
 dados/brutos/*.parcial
 
+# SIH/SUS: microdados com CEP e data de nascimento nunca entram no git.
+# Só a tabela agregada (dados/processados/sih_rmsp_internacoes.csv) é versionada.
+dados/brutos/sih/
+
 # Artefatos gerados pelo QGIS/GDAL
 *.aux.xml
 *.pgw
