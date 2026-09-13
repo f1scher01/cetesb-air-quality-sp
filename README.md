@@ -1,168 +1,180 @@
-# Integração Geoespacial: Sensoriamento Remoto MAIA-NASA, Rede CETESB e Saúde Pública (SIH/SUS)
+# Integração Geoespacial de Poluição Atmosférica e Saúde Coletiva
+
+### Estudo metodológico com dados sintéticos — Missão MAIA-NASA, rede CETESB e SIH/SUS
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
-[![QGIS](https://img.shields.io/badge/QGIS-3.34%20LTR-589632?logo=qgis)](https://qgis.org/)
-[![NASA MAIA](https://img.shields.io/badge/Mission-NASA%20MAIA%20Early%20Adopter-black?logo=nasa)](https://maia.jpl.nasa.gov/)
-[![CETESB](https://img.shields.io/badge/Ground--Truth-CETESB%20RMSPO-orange)](https://cetesb.sp.gov.br/)
-[![CRS](https://img.shields.io/badge/CRS-EPSG%3A4326%20(WGS84)-lightgrey)](#)
-[![Status](https://img.shields.io/badge/Status-Estudo%20Prático%20Concluído-success)](#)
-
-Pipeline automatizado em **Python** e ambiente **QGIS** desenvolvido para modelagem matricial, espacialização contínua de aerossóis atmosféricos (PM₂.₅ e PM₁₀), especiação química e estimativa de risco relativo em saúde coletiva (internações hospitalares do SUS) na Região Metropolitana de São Paulo.
-
-> **Contexto de Aplicação:** Desenvolvido como projeto preparatório e demonstração de competências para a vaga de estágio em pesquisa aplicada do **Núcleo de Sistemas Eletrônicos Embarcados (NSEE - Instituto Mauá de Tecnologia)** em cooperação com a **Faculdade de Saúde Pública da Universidade de São Paulo (FSP-USP)**, no âmbito do programa *Early Adopters* da **Missão MAIA da NASA**.
+[![NumPy](https://img.shields.io/badge/NumPy-IDW%20implementado%20à%20mão-013243?logo=numpy)](https://numpy.org/)
+[![Dados](https://img.shields.io/badge/Dados-SINTÉTICOS-critical)](#-aviso-os-dados-deste-repositório-são-sintéticos)
+[![Status](https://img.shields.io/badge/Status-Demonstração%20metodológica-blue)](#)
 
 ---
 
-## 🎯 Fundamentação Científica & Desafio Tecnológico
+## ⚠️ Aviso: os dados deste repositório são sintéticos
 
-A **Missão MAIA (Multi-Angle Imager for Aerosols)** da NASA investiga a correlação entre diferentes tipos de partículas em suspensão e desfechos cardiorrespiratórios. A integração entre sensoriamento remoto orbital e impacto epidemiológico terrestre é estruturada em quatro etapas metodológicas:
+**Nenhum dado real da CETESB, da NASA ou do SIH/SUS é utilizado aqui.**
 
-```mermaid
-flowchart TD
-    subgraph ETAPA1 [" "]
-        H1["🛰️ <b>1. Sensoriamento Remoto (NASA MAIA)</b>"]
-        A["Matrizes Orbitais NetCDF / HDF5<br>(AOD Multipolarimétrico)"]
-        B["Recorte Espacial Bounding Box<br>(Grade Regular RMSP ~800m)"]
-        H1 --> A --> B
-    end
+As concentrações das estações (`ESTACOES_EXPANDIDAS`) e as bases de internação por distrito
+(`DISTRITOS_SP`) são **valores literais escritos no código-fonte**, escolhidos para serem
+plausíveis em ordem de grandeza. A grade "de satélite" em `demo_netcdf_spatial_clip.py` é um
+campo gaussiano gerado com `numpy.random` e semente fixa.
 
-    subgraph ETAPA2 [" "]
-        H2["🏭 <b>2. Rede Terrestre de Superfície (CETESB)</b>"]
-        C["Séries Temporais de Superfície<br>(17 Estações Automáticas)"]
-        D["Filtro & Agregação Estatística<br>(CONAMA 506/2024 e OMS 2021)"]
-        E["Calibração Ground-Truth<br>(Validação Cruzada RMSE / MAE)"]
-        H2 --> C --> D --> E
-    end
+Os números produzidos por este pipeline **não são estimativas epidemiológicas válidas** e não
+devem ser citados como tal. O objetivo do repositório é demonstrar o **método** de integração
+entre sensoriamento remoto, medição de superfície e desfecho hospitalar, não produzir resultado
+científico.
 
-    B --> FUSAO["🔄 <b>Fusão e Calibração dos Dados (Satélite + Estações)</b>"]
-    E --> FUSAO
-
-    subgraph ETAPA3 [" "]
-        H3["🗺️ <b>3. Modelagem Espacial Contínua (QGIS & Python)</b>"]
-        F["Interpolação Espacial IDW<br>(Superfície Contínua de Concentração)"]
-        G["Especiação Química de Aerossóis<br>(SO₄²⁻, NO₃⁻, OC, EC, Poeira Mineral)"]
-        H["Exportação Vetorial GeoJSON & Mapas QGIS"]
-        H3 --> F --> G --> H
-    end
-
-    FUSAO --> H3
-
-    subgraph ETAPA4 [" "]
-        H4["🏥 <b>4. Avaliação Epidemiológica (SIH/SUS)</b>"]
-        I["Centróides dos Distritos Paulistanos<br>(Carga Populacional)"]
-        J["Funções Concentração-Resposta OMS<br>(Risco Relativo RR e Internações Atribuíveis)"]
-        H4 --> I --> J
-    end
-
-    H --> H4
-
-    classDef header fill:#1f6feb,stroke:#388bfd,stroke-width:2px,color:#ffffff,font-weight:bold;
-    classDef fusao fill:#238636,stroke:#2ea043,stroke-width:2px,color:#ffffff,font-weight:bold;
-    class H1,H2,H3,H4 header;
-    class FUSAO fusao;
-```
+> **Contexto.** Desenvolvido como estudo preparatório para o processo seletivo de estágio do
+> Núcleo de Sistemas Eletrônicos Embarcados (NSEE — Instituto Mauá de Tecnologia) em cooperação
+> com a Faculdade de Saúde Pública da USP, no âmbito do programa *Early Adopters* da Missão MAIA
+> da NASA.
 
 ---
 
-## 📐 Formulação Matemática & Física do Modelo
+## O que este repositório demonstra
 
-### 1. Relação Coluna Atmosférica $\leftrightarrow$ Concentração de Superfície
-Sensores orbitais medem a **Espessura Óptica de Aerossóis ($AOD$)**, uma grandeza adimensional que integra a extinção óptica em toda a coluna vertical:
-
-$$AOD = \int_0^\infty \sigma_{ext}(z) \, dz$$
-
-A estimativa da concentração de superfície de PM₂.₅ ($\mu g/m^3$) é parametrizada em função da altura da Camada Limite Planetária ($PBLH$) e do fator de crescimento higroscópico dos aerossóis $f(RH)$:
-
-$$PM_{2.5} \approx \eta \cdot \frac{AOD}{PBLH \cdot f(RH)}, \quad \text{onde } f(RH) = \left(1 - \frac{RH}{100}\right)^{-\gamma}$$
-
-### 2. Superfície Contínua por Inverso da Distância Ponderada (IDW)
-Para estimar a exposição fora das estações de monitoramento, implementou-se a interpolação geoespacial:
-
-$$\hat{Z}(s_0) = \frac{\sum_{i=1}^n w_i(s_0) Z(s_i)}{\sum_{i=1}^n w_i(s_0)}, \quad w_i(s_0) = \frac{1}{\|s_0 - s_i\|^p}, \quad (p=2)$$
-
-### 3. Estimativa de Impacto Epidemiológico (Concentração-Resposta)
-A quantificação do Risco Relativo ($RR$) para internações cardiovasculares (CID-10 I00-I99) e respiratórias (CID-10 J00-J99) segue a função log-linear da OMS com limiar de referência $C_0 = 5,0\,\mu g/m^3$:
-
-$$RR = \exp\left(\beta \cdot \max(0, C - C_0)\right)$$
-
-A Fração Atribuível Populacional ($PAF$) e as internações atribuíveis ($I_{atrib}$) são dadas por:
-
-$$PAF = \frac{RR - 1}{RR}, \quad I_{atrib} = I_{base} \cdot PAF$$
+| Competência | Onde está | Real ou sintético |
+| :--- | :--- | :--- |
+| Interpolação espacial IDW implementada do zero | `maia_spatial_engine.py` | **Algoritmo real** |
+| Função concentração-resposta e fração atribuível populacional | `maia_spatial_engine.py` | **Formulação real (OMS)** |
+| Estruturação de camada vetorial GeoJSON (EPSG:4326) | `pipeline_cetesb_sp.py` | **Formato real** |
+| Carregamento automatizado no console Python do QGIS | `qgis_style_loader.py` | **Script funcional** |
+| Composição cartográfica em matplotlib, 300 DPI | `maia_spatial_engine.py` | **Real** |
+| Concentrações das estações CETESB | literais no código | Sintético |
+| Internações SIH/SUS por distrito | literais no código | Sintético |
+| Grade de AOD "MAIA" | `numpy.random`, seed 42 | Sintético |
+| Fracionamento químico dos aerossóis | percentuais fixos | Sintético |
 
 ---
 
-## 🗺️ Visualizações Geoespaciais & Resultados
+## O que este repositório NÃO é
 
-O pipeline gera composições cartográficas científicas de alta densidade (300 DPI):
+Explicitado para que ninguém precise descobrir lendo o código:
 
-![Painel Integrado MAIA-NASA e CETESB](mapa_analise_integrada_sp.png)
-
-**Figura 1:** **A)** Superfície contínua de concentração de PM₂.₅ na Grande São Paulo com estações CETESB e impacto de internações por distrito. **B)** Especiação química estimada dos aerossóis (alvo central da instrumentação MAIA).
+- **Não lê NetCDF nem HDF5.** Nenhuma dependência de `xarray`, `netCDF4` ou `h5py` é utilizada.
+  O recorte espacial opera sobre matriz NumPy gerada em memória.
+- **Não faz ingestão automatizada da CETESB.** Não há requisição à API do QUALAR nem raspagem.
+- **Não consulta o DATASUS.** As bases de internação não vieram do TabNet nem dos arquivos do SIH.
+- **A validação cruzada não valida nada.** O RMSE e o MAE em `demo_netcdf_spatial_clip.py`
+  comparam ruído sintético contra valores literais. A métrica é aritmeticamente correta e
+  epistemicamente vazia.
+- **O fracionamento químico não é especiação.** `calcular_especiacao_maia()` aplica percentuais
+  fixos sobre o PM₂.₅. Como as frações nunca variam entre estações, o painel B da figura não
+  carrega informação além do próprio PM₂.₅.
 
 ---
 
-## 📊 Relatório Epidemiológico por Distrito (Amostragem SIH/SUS)
+## Fundamentação do modelo
 
-Estimativa anual de internações cardiorrespiratórias atribuíveis à poluição excedente em distritos-chave da capital:
+### 1. Coluna atmosférica e concentração de superfície
 
-| Distrito Paulistano | PM₂.₅ Médio (µg/m³) | RR Cardiovascular | RR Respiratório | Internações Atribuíveis / Ano |
+Sensores orbitais medem a **Espessura Óptica de Aerossóis (AOD)**, grandeza adimensional que
+integra a extinção óptica ao longo da coluna vertical:
+
+$$AOD = \int_0^\infty \sigma_{ext}(z)\, dz$$
+
+A conversão para concentração de superfície depende da altura da Camada Limite Planetária (PBLH)
+e do crescimento higroscópico do aerossol:
+
+$$PM_{2.5} \approx \eta \cdot \frac{AOD}{PBLH \cdot f(RH)}, \qquad f(RH) = \left(1 - \frac{RH}{100}\right)^{-\gamma}$$
+
+Esta relação está documentada como fundamentação teórica. **Ela não é aplicada no código**, que
+parte diretamente de concentrações de superfície.
+
+### 2. Superfície contínua por Inverso da Distância Ponderada
+
+Implementada em `interpolacao_idw()`, com tratamento do caso degenerate em que o ponto de grade
+coincide com uma estação:
+
+$$\hat{Z}(s_0) = \frac{\sum_{i=1}^n w_i Z(s_i)}{\sum_{i=1}^n w_i}, \qquad w_i = \frac{1}{\|s_0 - s_i\|^p}, \quad p = 2$$
+
+### 3. Impacto epidemiológico
+
+Função log-linear da OMS, com limiar de referência $C_0 = 5{,}0\ \mu g/m^3$ e coeficientes
+$\beta_{cardio} = 0{,}008$ e $\beta_{resp} = 0{,}011$ por $\mu g/m^3$:
+
+$$RR = \exp\left(\beta \cdot \max(0,\ C - C_0)\right), \qquad PAF = \frac{RR - 1}{RR}, \qquad I_{atrib} = I_{base} \cdot PAF$$
+
+---
+
+## Saída do modelo
+
+![Painel integrado](mapa_analise_integrada_sp.png)
+
+**Figura 1.** **(A)** Superfície contínua de PM₂.₅ interpolada por IDW sobre a grade da RMSP,
+com posições de estação e centróides de distrito. **(B)** Fracionamento químico por percentual
+fixo. Ambos os painéis operam sobre dados sintéticos.
+
+### Saída numérica sobre dados sintéticos
+
+Os valores abaixo são **produto do modelo alimentado com entradas sintéticas**. Não representam
+internações reais e não devem ser interpretados como estimativa de saúde pública.
+
+| Distrito | PM₂.₅ de entrada (µg/m³) | RR cardiovascular | RR respiratório | Saída do modelo (casos/ano) |
 | :--- | :---: | :---: | :---: | :---: |
-| **Itaquera** | 17.15 | 1.102 | 1.143 | **+1.062** |
-| **São Mateus** | 19.34 | 1.121 | 1.171 | **+1.011** |
-| **Campo Limpo** | 18.02 | 1.109 | 1.154 | **+795** |
-| **Santana / Tucuruvi** | 17.84 | 1.108 | 1.152 | **+674** |
-| **Mooca** | 19.78 | 1.125 | 1.176 | **+762** |
-| **Pinheiros** | 18.72 | 1.116 | 1.163 | **+563** |
-| **Sé / República** | 20.91 | 1.136 | 1.191 | **+484** |
+| Itaquera | 17,15 | 1,102 | 1,143 | 1.062 |
+| São Mateus | 19,34 | 1,121 | 1,171 | 1.011 |
+| Campo Limpo | 18,02 | 1,109 | 1,154 | 795 |
+| Santana / Tucuruvi | 17,84 | 1,108 | 1,152 | 674 |
+| Mooca | 19,78 | 1,125 | 1,176 | 762 |
+| Pinheiros | 18,72 | 1,116 | 1,163 | 563 |
+| Sé / República | 20,91 | 1,136 | 1,191 | 484 |
 
 ---
 
-## 📁 Estrutura Técnica do Repositório
+## Estrutura
 
 ```text
 cetesb-air-quality-sp/
-├── maia_spatial_engine.py             # Motor mestre: física AOD, IDW, especiação e risco SIH/SUS
-├── pipeline_cetesb_sp.py              # Ingestão de estações CETESB, agregação e exportação GeoJSON/CSV
-├── demo_netcdf_spatial_clip.py       # Demonstração de recorte de matrizes NetCDF (MAIA L2/L3)
-├── qgis_style_loader.py               # Script para carregar e estilizar automaticamente no console QGIS
-├── cetesb_estacoes_qualidade_ar.geojson # Camada vetorial georreferenciada (WGS84 EPSG:4326)
-├── cetesb_estacoes_especiacao_maia.csv # Tabela com fracionamento químico (SO4, NO3, OC, EC, Dust)
-├── exposicao_e_saude_distritos_sp.csv # Dados de exposição e métricas epidemiológicas por distrito
-├── validacao_satelite_cetesb.csv       # Matriz de validação cruzada entre satélite e estações
-├── mapa_analise_integrada_sp.png      # Composição cartográfica analítica de alta resolução (300 DPI)
-└── mapa_qualidade_ar_sp.png           # Mapa temático clássico das estações de monitoramento
+├── maia_spatial_engine.py               # IDW, função concentração-resposta, cartografia
+├── pipeline_cetesb_sp.py                # Estruturação e exportação GeoJSON / CSV
+├── demo_netcdf_spatial_clip.py          # Recorte espacial sobre grade SINTÉTICA
+├── qgis_style_loader.py                 # Carregamento no console Python do QGIS
+├── cetesb_estacoes_qualidade_ar.geojson # Camada vetorial WGS84 (EPSG:4326)
+├── cetesb_estacoes_especiacao_maia.csv  # Fracionamento por percentual fixo
+├── exposicao_e_saude_distritos_sp.csv   # Saída do modelo epidemiológico
+├── validacao_satelite_cetesb.csv        # Comparação entre duas fontes sintéticas
+└── mapa_analise_integrada_sp.png        # Composição cartográfica, 300 DPI
 ```
 
 ---
 
-## 🛠️ Como Executar o Pipeline Localmente
+## Execução
 
 ```bash
-# 1. Clonar repositório
 git clone https://github.com/f1scher01/cetesb-air-quality-sp.git
 cd cetesb-air-quality-sp
+pip install numpy pandas matplotlib
 
-# 2. Executar o motor geoespacial completo
-python maia_spatial_engine.py
-
-# 3. Executar o módulo de calibração espacial de satélite
-python demo_netcdf_spatial_clip.py
+python maia_spatial_engine.py        # gera CSVs e a composição cartográfica
+python demo_netcdf_spatial_clip.py   # recorte espacial sobre grade sintética
 ```
 
-### No QGIS:
-1. Abra o **QGIS 3.34 LTR**;
-2. Arraste `cetesb_estacoes_qualidade_ar.geojson` para o Canvas;
-3. Ou abra a console Python (`Ctrl+Alt+P`) e execute `qgis_style_loader.py` para carregamento imediato.
+No QGIS 3.34 LTR, arraste `cetesb_estacoes_qualidade_ar.geojson` para o canvas, ou abra o console
+Python com `Ctrl+Alt+P` e execute `qgis_style_loader.py`.
 
 ---
 
-## 👤 Autor
+## Próximos passos
 
-**Lucas Fischer Paez**  
-*Graduando em Engenharia Mecânica — Instituto Mauá de Tecnologia (2º Ano)*  
-*Coeficiente de Rendimento: 8,23 / 10 | Lean Six Sigma Green Belt*  
-*Pesquisa de Interesse: Telemetria, Sensoriamento Remoto, Dinâmica de Fluidos/Poluentes e Métodos Numéricos.*
+Na ordem em que agregam valor real ao estudo:
 
-* **LinkedIn:** [linkedin.com/in/lucasfischerpaez](https://www.linkedin.com/in/lucasfischerpaez)
-* **GitHub:** [github.com/f1scher01](https://github.com/f1scher01)
-* **E-mail:** fischer.paez@gmail.com
+1. **Substituir a grade sintética por NetCDF real.** Baixar um granule de AOD (MODIS MCD19A2 ou
+   VIIRS AERDB) no NASA Earthdata, abrir com `xarray`, recortar pelo *bounding box* da RMSP e
+   reprojetar. Esta é a lacuna mais relevante do repositório.
+2. **Ingerir séries reais da CETESB** pelo sistema QUALAR, substituindo os literais.
+3. **Baixar internações reais do SIH/SUS** pelo TabNet, por distrito e por capítulo da CID-10
+   (I00–I99 e J00–J99), substituindo as bases inventadas.
+4. **Refazer a validação cruzada** com satélite real contra estação real, momento em que o RMSE
+   e o MAE passam a significar alguma coisa.
+5. **Substituir o fracionamento fixo** por perfis de especiação medidos em campanhas da RMSP.
+
+---
+
+## Autor
+
+**Lucas Fischer Paez**
+Graduando em Engenharia Mecânica — Instituto Mauá de Tecnologia (2º ano)
+Coeficiente de rendimento 8,23 · Lean Six Sigma Green Belt
+Interesses: telemetria, sensoriamento remoto, métodos numéricos e dinâmica de poluentes
+
+[LinkedIn](https://www.linkedin.com/in/lucasfischerpaez) · [GitHub](https://github.com/f1scher01) · fischer.paez@gmail.com
