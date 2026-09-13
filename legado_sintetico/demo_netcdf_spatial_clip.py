@@ -10,8 +10,8 @@ os valores literais das estacoes definidos em pipeline_cetesb_sp.py. Elas sao
 aritmeticamente corretas e nao possuem significado fisico. Nao interprete o
 resultado como validacao de satelite contra medicao de superficie.
 
-Substituir a funcao simular_grade_satelite_maia() por leitura real com xarray
-e o proximo passo do projeto (ver secao "Proximos passos" do README).
+A leitura real de NetCDF foi implementada em ../goes_aod.py (GOES-19 ABI L2 AOD).
+Este modulo fica como registro da versao sintetica.
 
 Autor: Lucas Fischer Paez
 """

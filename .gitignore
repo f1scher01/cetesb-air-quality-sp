@@ -6,6 +6,17 @@ __pycache__/
 .venv/
 env/
 
+# Dados brutos pesados: NetCDF do GOES-19 (~40 MB cada) e downloads interrompidos.
+# Os JSON brutos da CETESB ficam versionados como registro de proveniência.
+dados/brutos/*.nc
+dados/brutos/*.parcial
+
+# Artefatos gerados pelo QGIS/GDAL
+*.aux.xml
+*.pgw
+*.qgz~
+qgis/*.qgs~
+
 # Documentos pessoais e testes locais
 *.pdf
 *Curriculo*

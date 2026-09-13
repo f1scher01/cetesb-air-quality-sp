@@ -1,0 +1,635 @@
+{
+ "type": "FeatureCollection",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:EPSG::4674"
+  }
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.62896029999996,
+     -23.505992721999974
+    ]
+   },
+   "properties": {
+    "estacao": "Santana"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.70999838199998,
+     -23.65497722999993
+    ]
+   },
+   "properties": {
+    "estacao": "Santo Amaro"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.46600027399995,
+     -23.668548999999928
+    ]
+   },
+   "properties": {
+    "estacao": "Mauá"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -47.47902991199993,
+     -23.502426583999977
+    ]
+   },
+   "properties": {
+    "estacao": "Sorocaba"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.62777375099995,
+     -23.54486269199998
+    ]
+   },
+   "properties": {
+    "estacao": "Parque D.Pedro II"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.66346552699997,
+     -23.616320078999934
+    ]
+   },
+   "properties": {
+    "estacao": "Congonhas"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.66068750299996,
+     -23.591841989999978
+    ]
+   },
+   "properties": {
+    "estacao": "Ibirapuera"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.60041664499994,
+     -23.54973404499998
+    ]
+   },
+   "properties": {
+    "estacao": "Mooca"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.41848336199996,
+     -23.879026730999954
+    ]
+   },
+   "properties": {
+    "estacao": "Cubatão-Centro"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.67270476899995,
+     -23.55354256199996
+    ]
+   },
+   "properties": {
+    "estacao": "Cerqueira César"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.61170114199996,
+     -23.685938798999928
+    ]
+   },
+   "properties": {
+    "estacao": "Diadema"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.73759943099998,
+     -23.566267465999942
+    ]
+   },
+   "properties": {
+    "estacao": "Cid.Universitária-USP-Ipen"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.69205192199996,
+     -23.48009870599998
+    ]
+   },
+   "properties": {
+    "estacao": "N.Senhora do Ó"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.46665141099993,
+     -23.58001483099997
+    ]
+   },
+   "properties": {
+    "estacao": "Itaquera"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.69696107799996,
+     -23.776265983999963
+    ]
+   },
+   "properties": {
+    "estacao": "Grajaú-Parelheiros"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.702016507999986,
+     -23.561459894999928
+    ]
+   },
+   "properties": {
+    "estacao": "Pinheiros"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.49163676599994,
+     -23.63980369899997
+    ]
+   },
+   "properties": {
+    "estacao": "S.André-Capuava"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.75829436799995,
+     -23.609323863999975
+    ]
+   },
+   "properties": {
+    "estacao": "Taboão da Serra"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -49.09279652899994,
+     -22.32672623299993
+    ]
+   },
+   "properties": {
+    "estacao": "Bauru"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.897097272999986,
+     -23.19200374299993
+    ]
+   },
+   "properties": {
+    "estacao": "Jundiaí"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -47.64965268999998,
+     -22.70122233999996
+    ]
+   },
+   "properties": {
+    "estacao": "Piracicaba"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -51.40877706799995,
+     -22.119936734999953
+    ]
+   },
+   "properties": {
+    "estacao": "Presidente Prudente"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -49.39827779299998,
+     -20.784689283999967
+    ]
+   },
+   "properties": {
+    "estacao": "São José do Rio Preto"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.79207766099995,
+     -23.526721418999955
+    ]
+   },
+   "properties": {
+    "estacao": "Osasco"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.30028210299997,
+     -23.98115259399998
+    ]
+   },
+   "properties": {
+    "estacao": "Santos-Ponta da Praia"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.67504315799994,
+     -23.68050765099997
+    ]
+   },
+   "properties": {
+    "estacao": "Interlagos"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.83577972799998,
+     -23.531395027999963
+    ]
+   },
+   "properties": {
+    "estacao": "Carapicuíba"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.518533402999935,
+     -23.455534257999943
+    ]
+   },
+   "properties": {
+    "estacao": "Guarulhos-Paço Municipal"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.42073683899997,
+     -23.50154736099995
+    ]
+   },
+   "properties": {
+    "estacao": "Itaim Paulista"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.78013233599995,
+     -23.66840930199993
+    ]
+   },
+   "properties": {
+    "estacao": "Capão Redondo"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.74332004099995,
+     -23.518705830999977
+    ]
+   },
+   "properties": {
+    "estacao": "Marg.Tietê-Pte Remédios"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.54613359999996,
+     -23.698626918999935
+    ]
+   },
+   "properties": {
+    "estacao": "S.Bernardo-Centro"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -47.53629833999997,
+     -22.459955268999977
+    ]
+   },
+   "properties": {
+    "estacao": "Santa Gertrudes"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -47.11928086199998,
+     -22.946728415999928
+    ]
+   },
+   "properties": {
+    "estacao": "Campinas-V.União"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -47.058972756999935,
+     -22.874618944999952
+    ]
+   },
+   "properties": {
+    "estacao": "Campinas-Taquaral"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -45.89079999599994,
+     -23.223645481999938
+    ]
+   },
+   "properties": {
+    "estacao": "S.José Campos-Jd.Satelite"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.40994877099996,
+     -23.44011700799996
+    ]
+   },
+   "properties": {
+    "estacao": "Guarulhos-Pimentas"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -45.575805024999966,
+     -23.032350958999928
+    ]
+   },
+   "properties": {
+    "estacao": "Taubaté"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -47.41431403399997,
+     -22.56360377699997
+    ]
+   },
+   "properties": {
+    "estacao": "Limeira"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.76609775899993,
+     -23.45626889999994
+    ]
+   },
+   "properties": {
+    "estacao": "Pico do Jaraguá"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -47.819133706999935,
+     -21.17715377899998
+    ]
+   },
+   "properties": {
+    "estacao": "Ribeirão Preto"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -45.19112235999995,
+     -22.801917138999954
+    ]
+   },
+   "properties": {
+    "estacao": "Guaratinguetá"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -47.13903649499997,
+     -22.780208950999963
+    ]
+   },
+   "properties": {
+    "estacao": "Paulínia-Sta Terezinha"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -47.581444519999934,
+     -22.439062304999936
+    ]
+   },
+   "properties": {
+    "estacao": "Rio Claro-Jd.Guanabara"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.755683774999966,
+     -23.413331292999942
+    ]
+   },
+   "properties": {
+    "estacao": "Perus"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -45.400072044999945,
+     -23.805198464999933
+    ]
+   },
+   "properties": {
+    "estacao": "São Sebastião"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.50245582799994,
+     -23.60605120599996
+    ]
+   },
+   "properties": {
+    "estacao": "Sapopemba"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -46.58408161999995,
+     -23.535326141999974
+    ]
+   },
+   "properties": {
+    "estacao": "Av.Salim F.Maluf-Pte Tatuapé"
+   }
+  }
+ ]
+}

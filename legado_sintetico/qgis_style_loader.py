@@ -1,5 +1,5 @@
 # Script de Automação para o Console Python do QGIS
-# Carrega automaticamente a camada GeoJSON e aplica estilo de quebras naturais
+# Carrega a camada GeoJSON sintetica no projeto aberto (sem simbologia)
 import os
 from qgis.core import QgsVectorLayer, QgsProject
 

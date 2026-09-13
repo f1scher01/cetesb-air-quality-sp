@@ -1,6 +1,7 @@
 """
 Pipeline de Integração e Análise Geoespacial: Dados de Qualidade do Ar CETESB (RMSPO)
-Projeto Preparatório: Missão MAIA-NASA / FSP-USP / NSEE-IMT
+LEGADO SINTETICO: as concentracoes abaixo foram escritas a mao, nao vieram da CETESB.
+Substituido por coleta_cetesb.py, que le dados reais do servico publico do QUALAR.
 Autor: Lucas Fischer Paez
 """
 
@@ -12,7 +13,8 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
 # 1. Definição das Estações de Monitoramento CETESB na Grande São Paulo
-# Coordenadas geográficas reais (WGS84 - EPSG:4326) e dados médios históricos
+# Coordenadas aproximadas das estacoes (WGS84). As concentracoes e contagens sao
+# valores SINTETICOS de ordem de grandeza plausivel, nao medias historicas reais.
 ESTACOES_CETESB = [
     {
         "estacao": "Pinheiros",
@@ -327,13 +329,13 @@ def gerar_mapa_tematico(df):
         
     # Barra de cores
     cbar = plt.colorbar(scatter, ax=ax, orientation="vertical", pad=0.02, shrink=0.75)
-    cbar.set_label("Concentracao Media de PM2.5 (ug/m3) - MAIA Target", fontsize=11, fontweight="bold", labelpad=10)
-    cbar.ax.axhline(15.0, color="green", linestyle="--", linewidth=1.5, label="Limite OMS (15 ug/m3)")
+    cbar.set_label("PM2.5 sintetico (ug/m3)", fontsize=11, fontweight="bold", labelpad=10)
+    cbar.ax.axhline(15.0, color="green", linestyle="--", linewidth=1.5, label="Valor-guia OMS 24 h (15 ug/m3)")
     
     # Títulos e Metadados Científicos
     plt.title(
         "Distribuicao Espacial de Material Particulado Fino ($PM_{2.5}$) na RMSP\n"
-        "Rede de Monitoramento CETESB | Preparatorio para a Missao MAIA-NASA",
+        "Valores sinteticos sobre posicoes de estacoes CETESB",
         fontsize=14,
         fontweight="bold",
         pad=15,
@@ -347,7 +349,7 @@ def gerar_mapa_tematico(df):
         Patch(facecolor="#fed976", edgecolor="#2b2b2b", label="12 - 17 ug/m3 (Niveis Baixos a Moderados)"),
         Patch(facecolor="#fd8d3c", edgecolor="#2b2b2b", label="18 - 20 ug/m3 (Moderado / Alerta OMS)"),
         Patch(facecolor="#bd0026", edgecolor="#2b2b2b", label="> 20 ug/m3 (Eixos Industriais / Trafego Critico)"),
-        plt.Line2D([0], [0], color="green", lw=1.5, linestyle="--", label="Meta Recomendada OMS (15 ug/m3)")
+        plt.Line2D([0], [0], color="green", lw=1.5, linestyle="--", label="Valor-guia OMS 24 h (15 ug/m3)")
     ]
     ax.legend(handles=legend_elements, loc="lower left", frameon=True, framealpha=0.92, facecolor="white", fontsize=9)
     

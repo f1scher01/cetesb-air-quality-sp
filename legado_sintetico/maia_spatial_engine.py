@@ -13,7 +13,7 @@ from matplotlib.patches import Patch
 import matplotlib.gridspec as gridspec
 
 # 1. ESTACOES CETESB COM CARACTERIZACAO FISICO-QUIMICA (ESPECIACAO MAIA)
-# Base fundamentada nas campanhas de amostragem de aerossois da RMSP (Andrade et al., 2017)
+# LEGADO SINTETICO: concentracoes escritas a mao, sem origem em medicao.
 ESTACOES_EXPANDIDAS = [
     {"estacao": "Pinheiros", "municipio": "São Paulo", "lat": -23.5614, "lon": -46.7020, "pm25": 18.4, "pm10": 33.2, "no2": 38.5, "perfil": "Urbano / Trafego"},
     {"estacao": "Cerqueira César", "municipio": "São Paulo", "lat": -23.5535, "lon": -46.6727, "pm25": 20.1, "pm10": 36.8, "no2": 44.2, "perfil": "Corredor Central"},
@@ -50,7 +50,8 @@ DISTRITOS_SP = [
 
 def calcular_especiacao_maia(pm25):
     """
-    Fracionamento quimico de PM2.5 conforme alvos da missao MAIA (NASA Target):
+    Fracionamento por PERCENTUAIS FIXOS escolhidos a mao (nao e especiacao medida).
+    As especies listadas sao as que a missao MAIA pretende estimar; os percentuais nao vem dela:
     - Sulfato (SO4): ~18% (processos de oxidacao atmosferica de enxofre)
     - Nitrato (NO3): ~16% (emissoes veiculares e formacao fotoquimica)
     - Carbono Organico (OC): ~34% (combustao primária e aerossol secundario)
@@ -144,7 +145,7 @@ def executar_pipeline_completo():
     
     print("-> Executando interpolacao geoespacial (IDW quadratico)...")
     pm25_superficie = interpolacao_idw(x_obs, y_obs, z_obs, glon, glat, power=2)
-    print(f"[OK] Superficie continua interpolada: grade 60x60 pixels (~800m de resolucao).")
+    print("[OK] Superficie IDW interpolada: grade 60x60 (~770 m em longitude).")
     
     # 3. Cruzamento com distritos e calculo epidemiologico
     distritos_analise = []
@@ -222,7 +223,7 @@ def executar_pipeline_completo():
             zorder=7
         )
         
-    ax1.set_title("A) Espacialização de PM₂.₅ & Internações Atribuíveis (SIH/SUS)", fontsize=11.5, fontweight="bold", pad=12)
+    ax1.set_title("A) IDW sobre PM₂.₅ sintético e saída do modelo C-R", fontsize=11.5, fontweight="bold", pad=12)
     ax1.set_xlabel("Longitude (WGS84)", fontsize=10, fontweight="bold")
     ax1.set_ylabel("Latitude (WGS84)", fontsize=10, fontweight="bold")
     ax1.legend(loc="lower left", fontsize=9, framealpha=0.92)
@@ -247,7 +248,7 @@ def executar_pipeline_completo():
     ax2.tick_params(axis="y", pad=8)
     ax2.invert_yaxis()
     ax2.set_xlabel("Concentração de PM₂.₅ por Componente Químico (µg/m³)", fontsize=10, fontweight="bold")
-    ax2.set_title("B) Fracionamento Especiado de Aerossóis (Modelo MAIA-NASA)", fontsize=11.5, fontweight="bold", pad=12)
+    ax2.set_title("B) Fracionamento por percentual fixo (sintético)", fontsize=11.5, fontweight="bold", pad=12)
     ax2.legend(loc="lower right", fontsize=8.5, framealpha=0.95)
     ax2.grid(axis="x", linestyle="--", alpha=0.6)
     
@@ -258,7 +259,7 @@ def executar_pipeline_completo():
     
     # 5. Gerar script de automação QGIS (Python Console)
     script_qgis = """# Script de Automação para o Console Python do QGIS
-# Carrega automaticamente a camada GeoJSON e aplica estilo de quebras naturais
+# Carrega a camada GeoJSON sintetica no projeto aberto (sem simbologia)
 import os
 from qgis.core import QgsVectorLayer, QgsProject
 
